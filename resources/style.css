@@ -1,0 +1,628 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Ubuntu", sans-serif;
+  background: linear-gradient(113deg, rgba(2,0,36,1) 0%, rgba(33,33,33,1) 37%, rgba(109,109,109,1) 100%);
+  color: rgb(225, 221, 215);
+  z-index: 0;
+}
+
+#transition-wall {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 999;
+  background-color: black;
+  display: none;
+}
+
+.transition-start {
+  animation: wallFadeIn 1s forwards;
+}
+
+
+.transition-end {
+  animation: wallFadeOut 1.3s forwards;
+}
+
+@keyframes wallFadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes wallFadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+a {
+  text-decoration: none;
+}
+header {
+  position: fixed;
+  padding: 20px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 80vh; /* Set the initial height of the header to 90% of the viewport height */
+  background: linear-gradient(to bottom, #222222, #555555);
+  /* background-color: rgba(17, 0, 0, 0.425); */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* transition: height 0.3s, transform 0.3s; Add transition effects to the height and transform properties */
+  z-index: 998; /* Ensure the header stays on top */
+  font-size: 48px; /* Adjust the font size as needed */
+}
+
+h1 {
+  margin: 0;
+  
+}
+
+#content {
+  margin-top: 90vh;
+  position: relative;
+  /* padding: 20px; */
+}
+
+#about-section {
+  position: relative;
+  z-index: 0;
+}
+
+h2 {
+  background: linear-gradient(to top, #222222, #555555);
+  margin: 0;
+  padding: 20px;
+  position: relative;
+  z-index: 0;
+}
+
+.slideshow {
+  position: relative;
+  width: 60%;
+  margin: 20px auto;
+}
+
+.arrow {
+  position: absolute;
+  top: 50%; 
+  transform: translateY(-50%);
+  cursor: pointer;
+  z-index: 1;
+  margin-top: -25px;
+  font-size: 70px;
+}
+
+.arrow-left {
+  left: -40px;
+}
+
+.arrow-right {
+  right: -40px;
+}
+
+.slideshow-images {
+  position: relative;
+  width: 100%;
+  height: 450px;
+  overflow: hidden;
+}
+#project-red{
+  z-index: 1;
+}
+
+.slideshow-images img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* object-fit: cover; */
+  opacity: 0;
+  aspect-ratio: 16 / 9;
+}
+
+.slide-out-right {
+  animation: slideOutRightAnimation 1s forwards;
+}
+
+.slide-out-left {
+  animation: slideOutLeftAnimation 1s forwards;
+}
+.slide-in-left {
+  animation: slideInLeftAnimation 1s forwards;
+}
+
+.slide-in-right {
+  animation: slideInRightAnimation 1s forwards;
+}
+
+@keyframes slideOutRightAnimation {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-100%);
+  }
+}
+@keyframes slideOutLeftAnimation {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(100%);
+  }
+}
+
+@keyframes slideInLeftAnimation {
+  0% {
+    opacity: 1;
+    transform: translateX(-100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRightAnimation {
+  0% {
+    opacity: 1;
+    transform: translateX(100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.drop {
+  cursor: pointer;
+}
+
+#socials {
+  grid-column: 2 / 3;
+  justify-content: center;
+  display: flex;
+  position: relative;
+  z-index: 1;
+  padding: 20px;
+  background: linear-gradient(23deg, rgba(2,0,36,1) 0%, rgb(89, 89, 89) 37%, rgba(109,109,109,1) 100%)
+}
+.social-clickable:after {
+  content: "";
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(-45deg, rgb(182, 86, 86), rgb(255, 166, 0));
+  top: 4.2rem;
+  left: -2rem;
+  position: absolute;
+  overflow: hidden;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+.social-clickable {
+  overflow: hidden;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background-color: rgb(46, 46, 46);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0px 2rem 0px 2rem;
+  position: relative;
+  cursor: pointer;
+  z-index: 1;
+}
+#socials a:hover::after {
+  top: 0;
+  left: 0;
+  
+}
+
+.social-clickable .icon {
+  font-size: 2rem;
+  color: #a3a3a3;
+  z-index: 2;
+  transition: color 0.5s;
+}
+#socials a:hover .linkedin {
+  color: #0077b5;
+}
+#socials a:hover .github {
+  color: #ffffff;
+}
+#socials a:hover .twitter {
+  color: rgb(29 161 242);
+}
+#socials a:hover .email {
+  color: rgb(172, 0, 0);
+  
+}
+#mail-info  {
+  margin: auto;
+}
+#contact-popup {
+  position: absolute;
+  opacity: 0;
+  /* display: none; */
+  text-align: center;
+  padding: 8px;
+  top: -40px;  
+  left: -40px;
+  right: -40px;
+  z-index: 999;
+  margin: 0 auto;
+  background-color: rgb(227, 227, 227);
+  color: black;
+  width: 0%;
+  overflow: hidden;
+  border-radius: 10px;
+  border: 1px solid black;
+}
+#contact-popup:focus-visible {
+  /* border: none; */
+  outline: none;
+}
+#contact-popup.open {
+  /* display: block; */
+  animation: visible 1s forwards;
+}
+#contact-popup.close {
+  /* display: block; */
+  animation: invisible 0.5s forwards;
+}
+@keyframes visible {
+  0% {
+    top: 0px;
+    width: auto;
+    opacity: 0;
+  }
+  100% {
+    top: -40px;
+    width: auto;
+    opacity: 1;
+  }
+}
+@keyframes invisible {
+  0% {
+    width: auto;
+    opacity: 1;
+  }
+  99% {
+    width: auto;
+    opacity: 0;
+}
+  100% {
+    visibility: hidden;
+    width: 0;
+  }
+}
+.collapsible {
+  height: auto;
+  width: 100%;
+  overflow: hidden;
+  transition:height 0.5s ease-out;
+}
+
+
+/* Maze Section */
+.maze-settings {
+  display: flex;
+  width: 1024px;
+  margin: auto;
+  padding: 10px;
+  border: 2px solid black;
+  box-sizing: border-box;
+  background-color: rgb(219, 219, 219);
+  border: 1px solid gray;
+}
+
+.maze-button-template {
+  background-color: black;
+  margin: auto;
+  padding: 10px;
+  box-sizing: border-box;
+  cursor: pointer;
+  user-select: none;
+}
+
+.maze-currently-selected {
+  background-color: rgb(65, 65, 65);
+}
+#maze-speed-slider {
+  display: block;
+}
+#maze-speed-slider-text {
+  display: block;
+  color: black;
+}
+
+#maze-current-search-mode {
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+#maze-current-search-mode:hover .maze-search-modes-list {
+  animation: maze-pop-up 1s forwards;
+  display: block;
+}
+
+@keyframes maze-pop-up {
+  0% {
+    bottom: -30%;
+    opacity: 0;
+  }
+  100% {
+    bottom: 100%;
+    opacity: 1;
+  }
+}
+
+.maze-search-modes-list {
+  display: none;
+  opacity: 0;
+  transform: translateZ(-10px);
+  transition: all  0.5s ease-in-out;
+  position: absolute;
+  bottom: 100%;
+  left: 0px;
+  border: 1px solid black;
+  padding: 5px;
+  background-color: #d5d5d5;
+  text-align: center;
+  cursor: default;
+}
+
+.maze-mode-list-item {
+  background-color: #cacaca;
+  cursor: pointer;
+  color: black;
+  padding: 5px;
+  margin: 5px;
+  display: block;
+  text-align: center;
+  border-radius: 10px;
+  transition: all 0.3s ease-out;
+  box-sizing: border-box;
+  border: 1px solid #cacaca;
+}
+
+.maze-mode-list-item:hover {
+  background-color: #a3a3a3;
+  border-radius: 0px;
+  border: 1px solid black;
+}
+
+.maze-search-mode-selected {
+  background-color: #424242;
+  color: white;
+  border: 1px solid black;
+
+}
+
+.maze-clear-modes {
+  display: none;
+  opacity: 0;
+  transform: translateZ(-10px);
+  transition: all  0.5s ease-in-out;
+  position: absolute;
+  bottom: 100%;
+  left: 0px;
+  right: 0px;
+  border: 1px solid black;
+  padding: 5px;
+  background-color: #d5d5d5;
+  text-align: center;
+  cursor: default;
+}
+
+#maze-clear-settings {
+  padding: 10px 40px;
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+#maze-clear-settings:hover .maze-clear-modes {
+  animation: maze-pop-up 1s forwards;
+  display: block;
+}
+.maze-clear-modes {
+  padding: 0;
+}
+.maze-clear-list-item {
+  background-color: #aa4e4e;
+  cursor: pointer;
+  color: black;
+  padding: 10px 5px;
+  margin: 10px 5px;
+  display: block;
+  text-align: center;
+  border-radius: 10px;
+  transition: all 0.5s ease-out;
+  box-sizing: border-box;
+  border: 1px solid #cacaca;
+  animation-duration: 0.2s;
+  animation-iteration-count: infinite;
+}
+
+
+
+.maze-clear-list-item:hover {
+  background-color: #ff0000;
+  animation-name: mazeDanger;
+  animation-timing-function: linear;
+}
+@keyframes mazeDanger {
+  0%   { transform: rotate(4deg); }
+  25%  { transform: rotate(0deg); }
+  50%   { transform: rotate(-4deg); }
+  75%   { transform: rotate(0deg); }
+  100%   { transform: rotate(4deg); }
+
+}
+
+#maze-menu-settings {
+  position: relative;
+}
+
+#maze-menu-settings:not(:hover) > .maze-menu-dropdown {
+  height: 0;
+  padding: 0;
+  top: 0;
+  transition: 
+  1s height,
+  1s padding,
+  1s top;
+  
+}
+
+#maze-menu-settings:not(:hover) > .maze-menu-dropdown  > .maze-menu-vertical{
+  padding: 0px; 
+  height: 0px;
+  /* top: 0px; */
+  transition: 
+  2s height,
+  2s padding;
+}
+
+#maze-menu-settings:not(:hover) > .maze-menu-dropdown > .maze-menu-vertical > *{
+  padding: 0px 10px;
+  height: 0;
+  visibility: hidden;
+  margin: 0;
+  top: 0;
+  transition: 
+  0.5s 0.1s padding,
+  0.5s 0.1s height,
+  0.5s 0.1s margin,
+  0.6s visibility;
+}
+
+.maze-menu-dropdown {
+  display: flex;
+  height: 150px;
+  position: absolute;
+  overflow: hidden;
+  padding: 15px 0;  
+  background: rgba(235, 235, 235, 0.5);
+  right: -125%;
+  left: -125%;
+  top: -180px;
+  transition: 0.6s top,
+  0.6s height;
+
+}
+.maze-menu-dropdown > *{
+  height: 200px;
+  padding: 5px 10px;
+  overflow: hidden;
+  /* transition: 
+  0.5s 0.1s height,
+  0.5s 0.1s padding; */
+}
+.maze-menu-item { 
+  opacity: 0.8;
+  overflow: hidden;
+}
+
+#maze-game {
+  aspect-ratio: 16 / 9;
+  margin: auto;
+  width: 1024px;
+  height: 576px;
+  background-color: #808080;
+  display: flex;
+  flex-direction: column;
+}
+.maze-row {
+  display: flex;
+  flex: 1 1 auto;
+}
+
+.maze-tile {
+  box-sizing: border-box;
+  border: 1px solid #cccccc;
+  background-color: #e3e3e3;
+  height: 100%;
+  width: 100%;
+  user-select: none;
+}
+
+.maze-wall {
+  background-color: #1b004f;
+  border: 1px solid #1b004f ;
+}
+
+.maze-searched {
+  background-color: #00a2ff;
+  border-color: #0092e7;
+}
+
+.maze-queue {
+  border-color: #808080;
+  background-color: #c2c2c2;
+}
+
+.maze-win{
+  background-color: #34f100;
+}
+
+.maze-end-pos::after {
+  display: block;
+  content: "";
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  background-color: #f1c40f;
+}
+
+.maze-start-pos {
+  position: relative;
+}
+
+.maze-start-pos::after {
+  content: "";
+  position: absolute;
+  /* top: 0; */
+  /* left: 0; */
+  margin: 25% 25%;
+  width: 50%;
+  height: 50%;
+  background-color: yellow;
+  border-radius: 50%;
+  display: block;
+}
+
+.maze-start-pos::before {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  background-color: rgb(226, 0, 226);
+  display: block;
+  /* transform: translateX(-50%); */
+  clip-path: polygon(50% 0%, 85% 15%, 100% 50%, 85% 85%, 50% 100%, 15% 85%, 0% 50%, 15% 15%);
+
+}
