@@ -2,9 +2,45 @@ body {
   margin: 0;
   padding: 0;
   font-family: "Ubuntu", sans-serif;
-  background: linear-gradient(113deg, rgba(2,0,36,1) 0%, rgba(33,33,33,1) 37%, rgba(109,109,109,1) 100%);
+  background: linear-gradient(113deg, #555555 37%, #000000 100%);
   color: rgb(225, 221, 215);
   z-index: 0;
+  padding: 0;
+}
+#construction-banner {
+  background: repeating-linear-gradient(
+    45deg,
+    #262626,
+    #262626 20px,
+    #ffae00 20px,
+    #ffae00 40px
+  );
+  width: 100%;
+  height: 10vh;
+  background-size: 200% 200%;
+  animation: barpole 25s ease-in-out infinite;
+  text-align: center;
+  position: relative;;
+  vertical-align: middle;
+}
+#construction-banner > span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.4em;
+  font-weight: 900;
+  background-color: rgba(42, 42, 42, 0.5);
+  padding: 20px;
+}
+@keyframes barpole {
+  50% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+
+  }
 }
 
 #transition-wall {
@@ -47,40 +83,94 @@ body {
 a {
   text-decoration: none;
 }
-header {
+#home-backing{
   position: fixed;
-  padding: 20px;
   top: 0;
   left: 0;
   width: 100%;
-  height: 80vh; /* Set the initial height of the header to 90% of the viewport height */
-  background: linear-gradient(to bottom, #222222, #555555);
+  height: 100%; /* Set the initial height of the header to 90% of the viewport height */
+  background: linear-gradient(to bottom, #494949, #555555);
   /* background-color: rgba(17, 0, 0, 0.425); */
   display: flex;
-  align-items: center;
   justify-content: center;
-  /* transition: height 0.3s, transform 0.3s; Add transition effects to the height and transform properties */
-  z-index: 998; /* Ensure the header stays on top */
-  font-size: 48px; /* Adjust the font size as needed */
+  z-index: 0;
+  box-sizing: border-box;
 }
 
-h1 {
-  margin: 0;
-  
-}
-
-#content {
-  margin-top: 90vh;
+#home-backing > div {
   position: relative;
-  /* padding: 20px; */
+  margin: 0;
+  background: radial-gradient(rgba(255,255,255,0.2) 0%, rgba(0,0,0,0) 50%);
+  width: 100vw;
+  height: 80vh;
 }
+#home-backing > div  > span{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -80%); 
+  color: white;
+  font-size: 7rem;
+  font-weight: 600;
+}
+#home-cover {
+  /* padding-top: 1px; */
+  position: absolute;
+  width: 100%;
+  z-index: 1;
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,.6) 50%, rgba(0,0,0,1)100%);
+  /* overflow: hidden; */
+  /* margin-top: 50vh; */
+}
+
+#home-scroll-down {
+  width: 400px;
+  height: 90px;
+  position: absolute;
+  top: 65vh;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  vertical-align: middle;
+  align-items: center;
+}
+
+#home-scroll-down > i {
+  flex: 1 1 auto;
+  margin: auto;
+  font-size: 3rem;
+  height: 30px;
+  background-image: linear-gradient(rgba(255,255,255,0)25%, rgba(255,255,255,1)50%, rgba(255,255,255,0)75%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: bringDown 3s linear infinite;
+  background-size: 200% 200%;
+}
+
+@keyframes bringDown {
+  0%{background-position:50% 200%}
+    100%{background-position:50% 0%}
+    /* 100%{background-position:50% 00%} */
+}
+
+#home-content {
+  position: relative;
+  width: 90vw;  
+  min-width: 800px;
+  margin: 80vh auto 0 auto;
+  background: linear-gradient(23deg, rgba(2,0,36,1) 0%, rgb(89, 89, 89) 37%, rgba(109,109,109,1) 100%);
+  transition: 0.2s linear opacity;
+  opacity: 0;
+}
+
 
 #about-section {
   position: relative;
   z-index: 0;
 }
 
-h2 {
+.home-section-header {
   background: linear-gradient(to top, #222222, #555555);
   margin: 0;
   padding: 20px;
@@ -141,10 +231,12 @@ h2 {
   animation: slideOutLeftAnimation 1s forwards;
 }
 .slide-in-left {
+  z-index: 1;
   animation: slideInLeftAnimation 1s forwards;
 }
 
 .slide-in-right {
+  z-index: 1;
   animation: slideInRightAnimation 1s forwards;
 }
 
@@ -202,7 +294,7 @@ h2 {
   position: relative;
   z-index: 1;
   padding: 20px;
-  background: linear-gradient(23deg, rgba(2,0,36,1) 0%, rgb(89, 89, 89) 37%, rgba(109,109,109,1) 100%)
+  /* background: linear-gradient(23deg, rgba(2,0,36,1) 0%, rgb(89, 89, 89) 37%, rgba(109,109,109,1) 100%) */
 }
 .social-clickable:after {
   content: "";
