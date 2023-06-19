@@ -13,7 +13,7 @@ function initializeHome() {
   window.onscroll = function() { shrinkHeaderAndContent(header) };
 
   
-  slides = document.getElementsByClassName("slideshow-images")[0].getElementsByTagName("img");
+  slides = document.getElementsByClassName("slideshow-images")[0].getElementsByTagName("div");
   var arrowLeft = document.getElementsByClassName("arrow-left")[0];
   var arrowRight = document.getElementsByClassName("arrow-right")[0];
   
@@ -54,22 +54,20 @@ function initializeHome() {
 }
 function homeHTML() {
   var html = `
-  <div id="transition-wall">
-
-    </div>
+  <div id="transition-wall"></div>
     <header id="home-backing">
       <div>
         <span>Tyler Riggs</span>
       </div>
-
     </header>
     <div id="home-cover">
       <div id="home-scroll-down">
         <i class="fa-solid fa-angles-down"></i>
       </div>
       <div id="home-content">
+        <div id="home-content-top"></div>
         <div class="project-section">
-          <h2 class="home-section-header">Projects</h2>
+          <h2 class="section-header">Projects</h2>
         </div>
         <div class="slideshow">
           <div class="arrow" style="left: -40px">
@@ -79,20 +77,32 @@ function homeHTML() {
             <i class="arrow-right fa-solid fa-caret-right"></i>
           </div>
           <div class="slideshow-images">
-            <img id="project-maze" class="slide-in-left" src="resources/images/maze-thumb.jpg" alt="Image 1">
-            <img src="resources/images/blue.jpg" alt="Image 2">
-            <img src="resources/images/green.jpg" alt="Image 3">
+            <div id="project-maze" class="slide-in-left">
+              <img src="resources/images/maze-thumb.jpg" alt="Image 1">
+              <span class="home-project-banner">Maze Game</span>
+            </div>
+            <div>
+              <img src="resources/images/blue.jpg" alt="Image 2">
+              <span class="home-project-banner">Blue Game</span>
+            </div>
+            <div>
+              <img src="resources/images/green.jpg" alt="Image 3">
+              <span class="home-project-banner">Green Game</span>
+            </div>
           </div>
         </div>
         <div id="about-section">
-          <h2 class="home-section-header">
-            <span>About Me
-            </span>
+          <h2 id="about-top">
+            <span>About Me</span>
+          </h2>
+          <div class="collapsible about-text" style="height: 0px;">
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Est ullamcorper eget nulla facilisi etiam dignissim diam quis enim. Cras tincidunt lobortis feugiat vivamus. Lectus urna duis convallis convallis tellus id interdum. Cras ornare arcu dui vivamus arcu felis bibendum. Dolor sit amet consectetur adipiscing elit. Amet porttitor eget dolor morbi non. Non tellus orci ac auctor augue mauris augue neque gravida. Sit amet nisl suscipit adipiscing bibendum est. Mus mauris vitae ultricies leo integer. Nec tincidunt praesent semper feugiat nibh sed. Luctus accumsan tortor posuere ac ut consequat. At tempor commodo ullamcorper a lacus vestibulum sed arcu.
+              
+                            Id volutpat lacus laoreet non curabitur gravida. Commodo ullamcorper a lacus vestibulum sed arcu. A lacus vestibulum sed arcu non. Elementum tempus egestas sed sed. Molestie ac feugiat sed lectus vestibulum mattis ullamcorper velit sed. Turpis nunc eget lorem dolor sed viverra ipsum. Ipsum consequat nisl vel pretium lectus quam id. Penatibus et magnis dis parturient montes nascetur ridiculus. Platea dictumst vestibulum rhoncus est pellentesque elit ullamcorper. Velit scelerisque in dictum non consectetur a erat. Aliquam faucibus purus in massa tempor. Fames ac turpis egestas maecenas pharetra. Fringilla est ullamcorper eget nulla facilisi etiam. Velit dignissim sodales ut eu sem integer vitae. Ultrices gravida dictum fusce ut. In nulla posuere sollicitudin aliquam ultrices sagittis orci. Urna duis convallis convallis tellus. Quam adipiscing vitae proin sagittis. Egestas diam in arcu cursus euismod quis viverra nibh.</p>
+          </div>
+          <h2 id="about-bottom">
             <i id="about-drop" class="drop fa-solid fa-caret-down"></i>
           </h2>
-          <div id="contacts" class="collapsible about-text" style="height: 0px;">
-            <p>filler text</p>
-          </div>
         </div>
         <div id="socials">
           <a href="/index.html" class="social-clickable">
@@ -114,11 +124,9 @@ function homeHTML() {
           </div>
         </div>
       </div>
-
       <div id="construction-banner">
         <span>Website Under Construction</span>
       </div>
-
     </div>
     `
   document.getElementsByTagName('body')[0].innerHTML = html
@@ -154,12 +162,15 @@ function toggleDrop(event) {
   var parts = section.children
   if (parts[1].style.height == '0px') {
     unCollapse(parts[1])
-    parts[0].children[1].classList.remove('fa-caret-down')
-    parts[0].children[1].classList.add('fa-minus')    
+    event.target.classList.remove('fa-caret-down')
+    event.target.classList.add('fa-minus')
+    parts[2].style.background = 'linear-gradient(to bottom left,#222222 0%, #555555 90%)'
   } else {
     collapse(parts[1])
-    parts[0].children[1].classList.remove('fa-minus')
-    parts[0].children[1].classList.add('fa-caret-down')
+    event.target.classList.remove('fa-minus')
+    event.target.classList.add('fa-caret-down')
+    parts[2].style.background = 'linear-gradient(to top left,#222222 0%, #555555 90%)'
+
   }
 }
 

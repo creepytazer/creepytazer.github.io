@@ -24,6 +24,14 @@ function transitionWallOut() {
   }, 1000)
 }
 
+function homeTransition() {
+  transitionWallIn()
+  setTimeout(() => {
+    initializeHome()
+    transitionWallOut()
+  },1000)
+}
+
 function mazeTransition() {
   console.log('yay!')
   transitionWallIn()

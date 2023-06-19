@@ -1,10 +1,11 @@
 var mazeGame = null
 
 function initializeMaze() { 
+  window.scrollTo(0, 0); 
   maze_HTML()
   mazeGame = new MazeGame()
   mazeGame.maze_fillMaze(23, 43)
-  maze_addEventListeners()
+  mazeGame.maze_addEventListeners()
 }
 
 class MazeGame {
@@ -146,12 +147,14 @@ class MazeGame {
     switch (searchMode) {
       case "maze-DFS":
         var q = [this.startPos]
+        this.disableEdit()
         this.dfs(q)
         break
 
       case "maze-BFS":
         var q = new Deque()
         q.append(this.startPos)
+        this.disableEdit()
         this.bfs(q)
         break
       case "maze-dijkstra":
@@ -160,10 +163,10 @@ class MazeGame {
           return
         } 
         var q = new Heap([[getManhattan(this.startPos, this.endPos), this.startPos]])
+        this.disableEdit()
         this.dijkstra(q)
         break
     }
-    this.userEdit = false
     this.ChangeStartToCancel()
   }
 
@@ -262,6 +265,22 @@ class MazeGame {
 
     return validNeighbors
   }
+
+  disableEdit() {
+    this.userEdit = false
+    var editables = document.getElementsByClassName('editable')
+    for (var i = 0; i < editables.length; i++) {
+      editables[i].classList.add('maze-noEdit')
+    }
+  }
+
+  enableEdit() {
+    this.userEdit = true
+    var editables = document.getElementsByClassName('editable')
+    for (var i = 0; i < editables.length; i++) {
+      editables[i].classList.remove('maze-noEdit')
+  }
+}
 
   generateMaze() {
     if (!this.userEdit) {
@@ -600,15 +619,15 @@ class MazeGame {
     resetSearchButton.addEventListener('click', () => {
       this.resetSearch()
     })
-    document.getElementsByClassName('maze-settings')[1].children[0].remove()
-    document.getElementsByClassName('maze-settings')[1].prepend(resetSearchButton)
+    document.getElementsByClassName('maze-tools')[1].insertBefore(resetSearchButton, document.getElementById('maze-start-game'))
+    document.getElementById('maze-start-game').remove()
   }
   resetSearch() {
     if (this.running) {
       clearTimeout(this.running)
       this.running = null
     }
-    this.userEdit = true
+    this.enableEdit()
     this.clearQueuedTiles(this.speed)
     this.clearSearchedTiles(this.speed)
     var board = document.getElementById('maze-game')
@@ -618,56 +637,13 @@ class MazeGame {
     startSearchButton.classList = 'maze-button-template'
     startSearchButton.innerHTML = 'START SEARCH'
     startSearchButton.addEventListener('click', () => {this.startSearch()})
+    document.getElementsByClassName('maze-tools')[1].insertBefore(startSearchButton, document.getElementById('maze-reset-game'))
     document.getElementById('maze-reset-game').remove()
-    document.getElementsByClassName('maze-settings')[1].prepend(startSearchButton)
   }
-}
 
-function maze_HTML() {
-  var html = `
-  <div id="transition-wall"></div>
-    <div class="maze-settings">
-      <div id="maze-start-placer" class="maze-button-template maze-tile-selector">START-TEMP</div>
-      <div id="maze-goal-placer" class="maze-button-template maze-tile-selector">GOAL-TEMP</div>
-      <div id="maze-wall-placer" class="maze-button-template maze-tile-selector">WALL-TEMP</div>
-      <div id="maze-eraser-placer" class="maze-button-template maze-tile-selector">ERASER-TEMP</div>
+  
 
-    </div>
-    <div id="maze-game"></div>
-    
-    <div class="maze-settings">
-      <div id="maze-start-game" class="maze-button-template">START SEARCH</div>
-      <div id="maze-generate-walls" class="maze-button-template">Generate Maze</div>
-      <div id="maze-speed-slider">
-        <label for="maze-speed-input" id="maze-speed-slider-text">Loading Speed</label>
-        <input id="maze-speed-input" type="range" min="0" max="990" step="10" value="850">
-      </div>
-      
-      <div id="maze-menu-settings" class="maze-button-template">
-        <span>Settings</span>
-        <div class="maze-menu-dropdown">
-          <div class="maze-menu-vertical">
-            <span id="maze-DFS" class="maze-mode-list-item maze-search-mode-selected maze-menu-item">Depth First Search</span>
-            <span id="maze-BFS" class="maze-mode-list-item maze-menu-item">Breadth First Search</span>
-            <span id="maze-dijkstra" class="maze-mode-list-item maze-menu-item">Dijkstra's</span>
-          </div>
-          <div class="maze-menu-vertical">
-            <span id="maze-clear-walls" class="maze-clear-list-item maze-menu-item">Clear Walls</span>
-            <span id="maze-clear-all" class="maze-clear-list-item maze-menu-item">Clear All</span>
-          </div>
-          
-          
-
-        </div>
-      </div>
-    </div>
-    <div id="project-back-to-home"><span><i class="fa-solid fa-angle-left"></i> Back</span></div>
-    `
-  document.getElementsByTagName('body')[0].innerHTML = html
-}
-
-
-function maze_addEventListeners() {
+maze_addEventListeners() {
   var board = document.getElementById('maze-game')
   board.addEventListener('mousedown', () => {
     mazeGame.mouseDown = 1
@@ -681,35 +657,37 @@ function maze_addEventListeners() {
 
   var placerSettings = document.getElementsByClassName('maze-tile-selector')
   for (var i = 0; i < placerSettings.length; i++) {
-    placerSettings[i].addEventListener('click', function (e) {
-      maze_removeSelectedPlacer()
-      e.target.classList.add('maze-currently-selected')
+    placerSettings[i].addEventListener('click', (e) =>{
+      if (this.userEdit) {
+        this.maze_removeSelectedPlacer()
+        e.target.classList.add('maze-currently-selected')  
+      }
     })
   }
 
   var searchModes = document.getElementsByClassName('maze-mode-list-item')
-  if (mazeGame && ! mazeGame.running) {
     for (var i = 0; i < searchModes.length; i++) {
-      searchModes[i].addEventListener('click', function (event) {
-        maze_removeSelectedSearchMode()
-        event.target.classList.add('maze-search-mode-selected')
+      searchModes[i].addEventListener('click', (e) => {
+        if (this.userEdit) {
+          mazeGame.maze_removeSelectedSearchMode()
+          e.target.classList.add('maze-search-mode-selected')
+  }
       })
     }
-  }
+  
 
   var clearModes = document.getElementsByClassName('maze-clear-list-item')
-  if (mazeGame && ! mazeGame.running) {
     for (var i = 0; i < clearModes.length; i++) {
       clearModes[i].addEventListener('click', function (event) {
         mazeGame.clearMaze(event.target.id)
       })
     }
-  }
 
   var startButton = document.getElementById('maze-start-game')
   startButton.addEventListener('click', () => {
     mazeGame.startSearch()
   })
+
 
   var speedSlider = document.getElementById('maze-speed-input')
   var speedText = document.getElementById('maze-speed-slider-text')
@@ -726,20 +704,76 @@ function maze_addEventListeners() {
   document.getElementById('maze-generate-walls').addEventListener('click', () => {
     mazeGame.generateMaze()
   })
+  document.getElementById('project-back-to-home').addEventListener('click', ()=> {
+    mazeGame = null
+    homeTransition()
+  })
 }
 
-function maze_removeSelectedPlacer() {
-  selected = document.getElementsByClassName('maze-currently-selected');
+maze_removeSelectedPlacer() {
+  var selected = document.getElementsByClassName('maze-currently-selected');
   for (var i = 0; i < selected.length; i++) {
     selected[i].classList.remove('maze-currently-selected')
   }
 }
 
-function maze_removeSelectedSearchMode() {
+maze_removeSelectedSearchMode() {
   var currentlySelected = document.getElementsByClassName('maze-search-mode-selected')
   for (var i = 0; i < currentlySelected.length; i++) {
     currentlySelected[i].classList.remove('maze-search-mode-selected')
   }
+}
+
+}
+
+function maze_HTML() {
+  var html = `
+  <div id="transition-wall"></div>
+    <div id="maze-backing"></div>
+    <div id="maze-content">
+      <span class="section-header">Maze Game</span>
+      <div class="maze-outer maze-top-settings">
+        <span>Maze Tools</span>
+        <div class="maze-tools">
+          <div id="maze-start-placer" class="maze-button-template maze-tile-selector editable">START-TEMP</div>
+          <div id="maze-goal-placer" class="maze-button-template maze-tile-selector editable">GOAL-TEMP</div>
+          <div id="maze-wall-placer" class="maze-button-template maze-tile-selector editable">WALL-TEMP</div>
+          <div id="maze-eraser-placer" class="maze-button-template maze-tile-selector editable">ERASER-TEMP</div>
+        </div>
+      </div>
+      <div id="maze-game"></div>
+      <div class="maze-outer">
+        <div class="maze-tools">
+          <div id="maze-start-game" class="maze-button-template">START SEARCH</div>
+          <div id="maze-generate-walls" class="maze-button-template editable">Generate Maze</div>
+          <div id="maze-speed-slider">
+            <label for="maze-speed-input" id="maze-speed-slider-text">Loading Speed</label>
+            <input id="maze-speed-input" type="range" min="0" max="990" step="10" value="850">
+          </div>
+          <div id="maze-menu-settings" class="maze-button-template">
+            <span>Settings</span>
+            <div class="maze-menu-dropdown">
+              <div class="maze-menu-vertical">
+                <span id="maze-DFS" class="maze-mode-list-item maze-search-mode-selected maze-menu-item">Depth First Search</span>
+                <span id="maze-BFS" class="maze-mode-list-item maze-menu-item">Breadth First Search</span>
+                <span id="maze-dijkstra" class="maze-mode-list-item maze-menu-item">Dijkstra's</span>
+              </div>
+              <div class="maze-menu-vertical">
+                <span id="maze-clear-walls" class="maze-clear-list-item maze-menu-item">Clear Walls</span>
+                <span id="maze-clear-all" class="maze-clear-list-item maze-menu-item">Clear All</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="project-back-to-home">
+        <span>
+          <i class="fa-solid fa-angle-left"></i>
+          Back</span>
+      </div>
+    </div>
+    `
+  document.getElementsByTagName('body')[0].innerHTML = html
 }
 
 // initializeMaze()

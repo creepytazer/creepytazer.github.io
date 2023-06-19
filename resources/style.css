@@ -1,10 +1,10 @@
-body {
+/* Global */
+
+html *{
   margin: 0;
   padding: 0;
   font-family: "Ubuntu", sans-serif;
-  background: linear-gradient(113deg, #555555 37%, #000000 100%);
   color: rgb(225, 221, 215);
-  z-index: 0;
   padding: 0;
 }
 #construction-banner {
@@ -83,6 +83,22 @@ body {
 a {
   text-decoration: none;
 }
+
+#project-back-to-home {
+  font-size: 2vw;
+  margin-left: 2vw;
+  padding: 10px;
+  background: linear-gradient(to left, #494949, #555555);
+  user-select: none;
+  cursor: pointer;
+  border-style: solid;
+  border-width: 4px;
+  border-image: linear-gradient(#555555, #222222) 30;
+  width: 10vw;
+  margin: 10px;
+}
+
+/* Landing Page */
 #home-backing{
   position: fixed;
   top: 0;
@@ -110,7 +126,7 @@ a {
   left: 50%;
   transform: translate(-50%, -80%); 
   color: white;
-  font-size: 7rem;
+  font-size: 7vw;
   font-weight: 600;
 }
 #home-cover {
@@ -162,20 +178,63 @@ a {
   background: linear-gradient(23deg, rgba(2,0,36,1) 0%, rgb(89, 89, 89) 37%, rgba(109,109,109,1) 100%);
   transition: 0.2s linear opacity;
   opacity: 0;
+  border-style: solid;
+  border-width: 4px;
+  border-image: linear-gradient(#555555, #222222) 30;
+  /* border-top: none; */
 }
 
+#home-content-top {
+  width: 100%;
+  height: 5vh;
+  background: linear-gradient(to top, #222222, #555555);
+}
 
 #about-section {
   position: relative;
   z-index: 0;
+  width: 90%;
+  margin: auto;
+  border-style: solid;
+  border-width: 4px;
+  border-image: linear-gradient(#555555, #222222) 30;
 }
 
-.home-section-header {
-  background: linear-gradient(to top, #222222, #555555);
-  margin: 0;
-  padding: 20px;
+#about-section > i {
+  background: linear-gradient(to bottom left,#222222 0%, #555555 90%);
+
+}
+
+#about-section > h2 {
+  display: flex;
+  box-sizing: border-box;
+  flex-direction: column;}
+#about-top {
+  background: linear-gradient(to bottom left,#222222 0%, #555555 90%);
+  padding-top: 5px;
+}
+#about-bottom {
+  background: linear-gradient(to top left,#222222 0%, #555555 90%);
+  padding-bottom: 5px;
+
+}
+#about-section > h2 > *{
+  flex: 1 1 auto;
+  text-align: center;
+}
+#about-section > .collapsible > p {
+    background: linear-gradient(to top left,#222222 0%, #555555 90%);
+    padding: 10px;
+    text-align: center;
+}
+.section-header {
+  text-align: center;
+  width: 100%;
+  display: block;
+  padding: 5px;
   position: relative;
   z-index: 0;
+  font-size: 3vw;
 }
 
 .slideshow {
@@ -208,11 +267,8 @@ a {
   height: 450px;
   overflow: hidden;
 }
-#project-red{
-  z-index: 1;
-}
 
-.slideshow-images img {
+.slideshow-images > div {
   position: absolute;
   top: 0;
   left: 0;
@@ -220,7 +276,24 @@ a {
   height: 100%;
   /* object-fit: cover; */
   opacity: 0;
+  cursor: pointer;
   aspect-ratio: 16 / 9;
+}
+
+.slideshow-images > div > img{
+  width: 100%;
+  height: 100%;
+}
+
+.home-project-banner {
+  position: absolute;
+  background-color: rgba(0,0,0, 0.8);
+  text-align: center;
+  width: 110%;
+  top: 80%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2vw;
 }
 
 .slide-out-right {
@@ -294,7 +367,6 @@ a {
   position: relative;
   z-index: 1;
   padding: 20px;
-  /* background: linear-gradient(23deg, rgba(2,0,36,1) 0%, rgb(89, 89, 89) 37%, rgba(109,109,109,1) 100%) */
 }
 .social-clickable:after {
   content: "";
@@ -416,29 +488,68 @@ a {
 
 
 /* Maze Section */
-.maze-settings {
-  display: flex;
-  width: 1024px;
-  margin: auto;
-  padding: 10px;
-  border: 2px solid black;
+#maze-backing {
+  position: fixed;
+  background: linear-gradient(23deg, rgba(2,0,36,1) 0%, rgb(89, 89, 89) 37%, rgba(109,109,109,1) 100%);
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+#maze-content {
+  position: relative;
+  /* text-align: center; */
+  padding: 20px;
+}
+
+.maze-outer {
   box-sizing: border-box;
   background-color: rgb(219, 219, 219);
   border: 1px solid gray;
+  width: 1024px;
+  margin: auto;
+  border: 2px solid black;
+  padding: 5px;
+}
+
+.maze-outer > span {
+  margin-left: 2vw;
+}
+
+.maze-tools {
+  position: relative;
+  display: flex;
+  /* padding: 10px; */
+  box-sizing: border-box;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+}
+
+.maze-top-settings > span {
+  color: black;
 }
 
 .maze-button-template {
-  background-color: black;
-  margin: auto;
+  position: relative;
+  background: linear-gradient(to top left, rgb(131, 131, 131)0%, rgb(24, 24, 24)99%);
+  background-size: 200% 200%;
+  /* margin: 5px; */
   padding: 10px;
   box-sizing: border-box;
   cursor: pointer;
   user-select: none;
+  flex: 1 1 auto;
+  text-align: center;
+  transition: 1s background-position, 0.4s ;
+}
+
+.maze-button-template:hover {
+  background-position: 50% 50%;
 }
 
 .maze-currently-selected {
-  background-color: rgb(65, 65, 65);
-}
+background-position: 100% 100%;}
 #maze-speed-slider {
   display: block;
 }
@@ -457,6 +568,15 @@ a {
   display: block;
 }
 
+
+
+#maze-reset-game {
+  background: linear-gradient(to top left, rgb(140, 90, 90)0%, rgb(50, 24, 24)99%);
+  background-size: 200% 200%;
+}
+#maze-start-game {
+  background: linear-gradient(to top left, rgb(90, 140, 90)0%, rgb(24, 50, 24)99%);
+  }
 @keyframes maze-pop-up {
   0% {
     bottom: -30%;
@@ -468,20 +588,7 @@ a {
   }
 }
 
-.maze-search-modes-list {
-  display: none;
-  opacity: 0;
-  transform: translateZ(-10px);
-  transition: all  0.5s ease-in-out;
-  position: absolute;
-  bottom: 100%;
-  left: 0px;
-  border: 1px solid black;
-  padding: 5px;
-  background-color: #d5d5d5;
-  text-align: center;
-  cursor: default;
-}
+
 
 .maze-mode-list-item {
   background-color: #cacaca;
@@ -594,13 +701,17 @@ a {
   2s height,
   2s padding;
 }
-
+.maze-menu-vertical {  position: relative;
+  }
 #maze-menu-settings:not(:hover) > .maze-menu-dropdown > .maze-menu-vertical > *{
   padding: 0px 10px;
   height: 0;
   visibility: hidden;
   margin: 0;
   top: 0;
+  -webkit-transition: 0.5s 0.1s padding, 0.5s 0.1s height, 0.5s 0.1s margin, 0.6s visibility;
+  -o-transition: 0.5s 0.1s padding, 0.5s 0.1s height, 0.5s 0.1s margin, 0.6s visibility;
+  -ms-transition: 0.5s 0.1s padding, 0.5s 0.1s height, 0.5s 0.1s margin, 0.6s visibility;
   transition: 
   0.5s 0.1s padding,
   0.5s 0.1s height,
@@ -614,13 +725,14 @@ a {
   position: absolute;
   overflow: hidden;
   padding: 15px 0;  
+  width: 100%;
   background: rgba(235, 235, 235, 0.5);
-  right: -125%;
-  left: -125%;
+  left: 50%;
+  transform: translateX(-50%);
   top: -180px;
   transition: 0.6s top,
   0.6s height;
-
+  cursor: default;
 }
 .maze-menu-dropdown > *{
   height: 200px;
@@ -633,6 +745,21 @@ a {
 .maze-menu-item { 
   opacity: 0.8;
   overflow: hidden;
+}
+
+.maze-noEdit {
+  cursor: default;  
+}
+
+.maze-noEdit::after {
+  content: '';
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: gray;
+  opacity: 0.6;
 }
 
 #maze-game {
