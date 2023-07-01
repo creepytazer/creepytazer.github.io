@@ -10,13 +10,11 @@ function initializeHome() {
   }, 300)
   header = document.getElementById("myHeader");
   content = document.getElementById("content");
-  window.onscroll = function() { shrinkHeaderAndContent(header) };
+  window.addEventListener('scroll',shrinkHeaderAndContent)
 
-  
   slides = document.getElementsByClassName("slideshow-images")[0].getElementsByTagName("div");
   var arrowLeft = document.getElementsByClassName("arrow-left")[0];
   var arrowRight = document.getElementsByClassName("arrow-right")[0];
-  
 
   arrowLeft.addEventListener("click", previousSlide);
   arrowRight.addEventListener("click", nextSlide);
@@ -78,12 +76,12 @@ function homeHTML() {
           </div>
           <div class="slideshow-images">
             <div id="project-maze" class="slide-in-left">
-              <img src="resources/images/maze-thumb.jpg" alt="Image 1">
+              <img src="resources/images/maze-thumb.jpg" alt="Maze Image">
               <span class="home-project-banner">Maze Game</span>
             </div>
-            <div>
-              <img src="resources/images/blue.jpg" alt="Image 2">
-              <span class="home-project-banner">Blue Game</span>
+            <div id="project-botstacle">
+              <img src="resources/projects/botstacle course/images/stage1.png" alt="Botstacle Image">
+              <span class="home-project-banner">Botstacle Course</span>
             </div>
             <div>
               <img src="resources/images/green.jpg" alt="Image 3">
@@ -214,11 +212,15 @@ function showSlide(n, prev, direction) {
 
 function shrinkHeaderAndContent() {  
   var scrollPosition = window.scrollY;
-  console.log(scrollPosition / document.documentElement.clientHeight)
   document.getElementById('home-content').style.opacity = (scrollPosition / document.documentElement.clientHeight) * 3
   document.getElementById('home-scroll-down').style.opacity = 1 - (scrollPosition / document.documentElement.clientHeight) * 5
 }
 
 function addProjectEventListeners() {
-  document.getElementById('project-maze').addEventListener('click', mazeTransition)
+  document.getElementById('project-maze').addEventListener('click', () => {
+    window.removeEventListener('scroll', shrinkHeaderAndContent)
+    mazeTransition()})
+  document.getElementById('project-botstacle').addEventListener('click', () => {
+    window.removeEventListener('scroll', shrinkHeaderAndContent)
+    BotstacleTransition()})
 }

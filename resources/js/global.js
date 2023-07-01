@@ -3,7 +3,7 @@ if (document.readyState == "loading") {
 } else {
   ready();
 }
-
+var game = null
 function ready() {
   initializeHome()
 }
@@ -33,10 +33,34 @@ function homeTransition() {
 }
 
 function mazeTransition() {
-  console.log('yay!')
   transitionWallIn()
   setTimeout(() => {
     initializeMaze()
     transitionWallOut()
   },1000)
+}
+
+function BotstacleTransition() {
+  transitionWallIn()
+  setTimeout(() => {
+    initializeBostacle()
+    transitionWallOut()
+  },1000)
+}
+
+function pointInRect(point,rect) {
+  if (rect.pos.x < point.x && point.x < rect.pos.x + rect.width &&
+    rect.pos.y < point.y && point.y < rect.pos.y + rect.height) {
+      return true
+    }
+  return false
+}
+
+class Point {
+  constructor(x, y, x2=null, y2=null) {
+    this.x = x
+    this.y = y
+    this.x2 = x2
+    this.y2 = y2
+  }
 }

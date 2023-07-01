@@ -98,6 +98,18 @@ a {
   margin: 10px;
 }
 
+.res-1024-576 {
+  width: 2000px;
+  height: 1000px;
+  /* aspect-ratio: 16 / 9; */
+}
+
+#project-canvas {
+  margin: auto;
+  display: block;
+  outline: none;
+}
+
 /* Landing Page */
 #home-backing{
   position: fixed;
