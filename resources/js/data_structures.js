@@ -150,3 +150,6 @@ function integerDivision(n1, n2) {
 function getManhattan(set1, set2) {
   return Math.abs(set1[0] - set2[0]) + Math.abs(set1[1] - set2[1])
 }
+function getEuclidean(xyList1, xyList2) {
+  return (((Math.abs(xyList2[0] - xyList1[0])**2) + (Math.abs(xyList2[1] - xyList1[1])**2))**0.5)
+} 

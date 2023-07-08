@@ -679,7 +679,7 @@ maze_addEventListeners() {
   var clearModes = document.getElementsByClassName('maze-clear-list-item')
     for (var i = 0; i < clearModes.length; i++) {
       clearModes[i].addEventListener('click', function (event) {
-        mazeGame.clearMaze(event.target.id)
+      mazeGame.clearMaze(event.target.id)
       })
     }
 
@@ -687,7 +687,6 @@ maze_addEventListeners() {
   startButton.addEventListener('click', () => {
     mazeGame.startSearch()
   })
-
 
   var speedSlider = document.getElementById('maze-speed-input')
   var speedText = document.getElementById('maze-speed-slider-text')

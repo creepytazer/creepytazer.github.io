@@ -5,6 +5,7 @@ var content = null
 var header = null
 function initializeHome() {
   homeHTML()
+  slideIndex = 0
   setTimeout(() => {
     window.scrollTo(0, 0); 
   }, 300)

@@ -49,8 +49,16 @@ function BotstacleTransition() {
 }
 
 function pointInRect(point,rect) {
-  if (rect.pos.x < point.x && point.x < rect.pos.x + rect.width &&
-    rect.pos.y < point.y && point.y < rect.pos.y + rect.height) {
+  let x1 = rect.pos.x, x2 = rect.pos.x + rect.width
+  let y1 = rect.pos.y, y2 = rect.pos.y + rect.height
+  if (x1 > x2) {
+    x2 = rect.pos.x, x1 = rect.pos.x + rect.width
+  }
+  if (y1 > y2) {
+    y2 = rect.pos.y, y1 = rect.pos.y + rect.height
+  }
+  if (x1 <= point.x && point.x <= x2 &&
+    y1 <= point.y && point.y <= y2) {
       return true
     }
   return false

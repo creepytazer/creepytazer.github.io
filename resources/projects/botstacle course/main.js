@@ -10,19 +10,59 @@ class Display {
 
   draw(game) {
     this.drawBG()
-
-
-    if (game.running) {
+    if (game.menu.menuState.state == 'inGame' || game.menu.menuState.state == 'stageCreator') {
       this.drawWalls(game.stages.walls)
       this.drawWinZone(game.stages.goal)
       this.drawPlayers(game.playerList) 
       this.drawObstacles(game.stages.obstacles)
     }
+    if(game.menu.menuState.state == 'stageCreator') {
+      this.drawPlacing(game.menu.menuState.placing)
+    }
     this.drawMenuButtons(game.menu.buttons)
     this.drawMenuText(game.menu.text)
     this.drawMenuImages(game.menu.images)
-    
   }
+
+  drawPlacing(placing) {
+    if (!placing) {return}
+    if (placing instanceof BostacleWall) {
+      this.drawWalls([placing])
+    }
+    if (placing instanceof BostacleWinZone) {
+      this.drawWinZone(placing,true)
+    } else if (placing instanceof BotstaclePlayer) {
+      this.drawPlayers([placing])
+    } else if (placing instanceof BostacleObstacle) {
+      this.drawCreatorObstacle(placing)
+    }
+  }
+
+  drawCreatorObstacle(obs) {
+    this.context.fillStyle = 'rgba(0,0,255,0.5)'
+    this.context.strokeStyle = 'rgba(0,0,0,1)'
+    this.context.lineWidth = 5
+    let moves = obs.moves
+    this.context.setLineDash([30,30])
+    this.context.beginPath()
+    for (var i = 0; i < moves.length - 1; i++) {
+      this.context.moveTo(moves[i].x + obs.width / 2, moves[i].y + obs.height / 2)
+      this.context.lineTo(moves[i + 1].x + obs.width / 2, moves[i + 1].y + obs.height / 2)
+    }
+    this.context.stroke()
+
+    this.context.setLineDash([])
+    for (var i = 0; i < moves.length; i++) {
+      this.context.beginPath()
+      this.context.arc(moves[i].x + obs.width / 2, moves[i].y + obs.height / 2, obs.width * 0.4, 0, 2 * Math.PI)
+      this.context.fill()
+      this.context.stroke()
+    }
+    this.context.lineWidth = 5
+    this.context.fillStyle = 'rgba(0,0,255,0.5)', this.context.strokeStyle = 'rgba(0,0,0,0.5)'
+    this.context.fillRect(obs.pos.x, obs.pos.y, obs.width, obs.height)
+    this.context.strokeRect(obs.pos.x, obs.pos.y, obs.width, obs.height)
+}
 
   drawMenuImages(imageList) {
     imageList.forEach((item) => {
@@ -71,18 +111,20 @@ class Display {
     this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
   }
 
-  drawWinZone(winZone) {
+  drawWinZone(winZone, fake=false) {
+    if (!winZone) {return}
     this.context.fillStyle = 'rgba(0,255,0,0.5)'
+    if (fake) {this.context.fillStyle = 'rgba(0,200,0,0.5)'}
     this.context.fillRect(winZone.pos.x, winZone.pos.y, winZone.width, winZone.height)
   }
 
   drawPlayers(playerList) {
+    if (!playerList || playerList.length == 0) {return}
     this.context.lineWidth = 5
 
     for (var i = 0; i < playerList.length; i++) {
       this.context.fillStyle = `rgba(255,0,0,${playerList[i].alpha})`
       this.context.strokeStyle = `rgba(0,0,0,${playerList[i].alpha})`
-  
       var p = playerList[i]
       this.context.fillRect(p.pos.x, p.pos.y, p.width, p.height)
       this.context.strokeRect(p.pos.x, p.pos.y, p.width, p.height)
@@ -93,13 +135,11 @@ class Display {
       this.context.strokeStyle = `rgba(0,0,0,${playerList[0].alpha})`
       this.context.fillRect(p.pos.x, p.pos.y, p.width, p.height)
       this.context.strokeRect(p.pos.x, p.pos.y, p.width, p.height)
-
     }
   }
-  drawWalls(wallList) {
-    this.context.fillStyle = 'black'
-    
+  drawWalls(wallList) {    
     for (var i = 0; i < wallList.length; i++) {
+      this.context.fillStyle = wallList[i].color
       this.context.translate(wallList[i].pos.x + wallList[i].width / 2, wallList[i].pos.y + wallList[i].height / 2)
       this.context.rotate((wallList[i].rotation * Math.PI) / 180)
       this.context.fillRect(-wallList[i].width / 2, -wallList[i].height / 2, wallList[i].width, wallList[i].height)
@@ -107,15 +147,17 @@ class Display {
       this.context.translate(-(wallList[i].pos.x + wallList[i].width / 2), -(wallList[i].pos.y + wallList[i].height / 2))
     }
   }
-  drawObstacles(obstacleList) {
+  drawObstacles(obstacleList, fake=false) {
     this.context.fillStyle = 'blue'
     this.context.strokeStyle = 'black'
+    if (fake) {
+      this.context.fillStyle = 'rgba(0,0,255,0.5)', this.context.strokeStyle = 'rgba(0,0,0,0.5)'
+    }
     this.context.lineWidth = 5
     for (var i = 0; i < obstacleList.length; i++) {
       var o = obstacleList[i]
       this.context.fillRect(o.pos.x, o.pos.y, o.width, o.height)
       this.context.strokeRect(o.pos.x, o.pos.y, o.width, o.height)
-
     }
   }
   adjustFontSize(t) {
@@ -135,11 +177,6 @@ class Display {
         l = (l + r) / 2 + 1
       }
     }
-    // while (this.context.measureText(t.text).width > t.width) {
-    //   t.fontSize--
-    //   t.font = `${t.fontSize}px ${t.fontFace}`
-    //   this.context.font = t.font
-    // }
   }
 }
 
@@ -152,11 +189,12 @@ class BostacleWinZone {
 }
 
 class BostacleWall {
-  constructor(pos, width=10, height=10, rotation=0) {
+  constructor(pos, width=10, height=10, rotation=0, color='black') {
     this.pos = pos
     this.rotation = rotation   // in degrees
     this.width = width
     this.height = height
+    this.color = color
   }
 }
 
@@ -222,6 +260,9 @@ class BotstaclePlayer {
     var wX1 = wall.pos.x, wX2 = wall.pos.x + wall.width
     var wY1 = wall.pos.y, wY2 = wall.pos.y + wall.height
 
+    if (wX1 > wX2) {wX2 = wall.pos.x, wX1 = wall.pos.x + wall.width}
+    if (wY1 > wY2) {wY2 = wall.pos.y, wY1 = wall.pos.y + wall.height}
+
     if (this.prevPos.x + this.width < wX1) {
       this.pos.x = wX1 - (this.width + 1)
     } else if (this.prevPos.x > wX2) {
@@ -235,14 +276,16 @@ class BotstaclePlayer {
   }
 
   checkGoal(goal) {
-      if (this.checkCollision(this, goal)) {   // if one hitbox is below other
+      if (goal && this.checkCollision(this, goal)) {   // if one hitbox is below other
           this.reachedGoal = true
       }
   }
 
   checkCollision(obj1, obj2) {
     var x1 =  obj1.pos.x, y1 = obj1.pos.y, x2 = x1 + obj1.width, y2 = y1 + obj1.height
-    var b1 =  obj2.pos.x, c1 = obj2.pos.y, b2 = b1 + obj2.width, c2 = c1 + obj2.height     
+    var b1 =  obj2.pos.x, c1 = obj2.pos.y, b2 = b1 + obj2.width, c2 = c1 + obj2.height
+    if (b1 > b2) {b2 = obj2.pos.x, b1 = b2 + obj2.width}
+    if (c1 > c2) {c2 = obj2.pos.y, c1 = c2 + obj2.height}
     if (x1 > b2 || b1 > x2 || y1 > c2 || c1 > y2) {
           return false
         }
@@ -272,6 +315,7 @@ class BotstaclePlayer {
   }
 
   getScore(goal) {
+    if (!goal) {return 0}
     var x1 = [this.pos.x + this.width / 2, this.pos.y + this.height / 2]
     var x2 = [goal.pos.x + goal.width / 2, goal.pos.y + goal.height / 2]
     this.score = 1 / ((Math.abs(x2[0] - x1[0])**2 + Math.abs(x2[1] - x1[1])**2)**0.5)
@@ -390,11 +434,13 @@ class BostacleGame {
   }
 
   startGame() {
-    if (this.menu.menuState[1] == 0) {
-      alert('Not Ready Yet!')
+    if (this.menu.menuState.state == 'stageSelect' && this.menu.menuState.slideIndex == 0) {
+      this.stageCreator()
       return
     }
-    this.stages.loadStage(this.menu.menuState[1])
+    if (this.menu.menuState.state == 'stageSelect') {
+      this.stages.loadStage(this.menu.menuState.slideIndex)
+    }
     this.menu.inGame()
     this.settingsTextUpdate()
     this.running = true
@@ -419,7 +465,14 @@ class BostacleGame {
   }
 
   playFrame() {
-    if (this.running) {
+    if (this.menu.menuState.state == 'stageCreator' && this.menu.menuState.placing != 'eraser') {
+      this.updateObstacles()
+      if (this.menu.menuState.placing instanceof BostacleObstacle && this.menu.menuState.placementLocked) {
+        this.updateObstacles(true)
+      }
+    }
+    
+    if (this.menu.menuState.state == 'inGame') {
       this.updatePlayers()
       this.updateObstacles()
       this.currentPlayerMoves++  
@@ -430,9 +483,13 @@ class BostacleGame {
     this.display.draw(this)
   }
 
-  updateObstacles() {
-    for (var i = 0; i < this.stages.obstacles.length; i++) {
-      this.stages.obstacles[i].update()
+  updateObstacles(fake=false) {
+    let obstacleList = this.stages.obstacles
+    if (fake && this.menu.menuState.placing instanceof BostacleObstacle) {
+      obstacleList = [this.menu.menuState.placing]
+    }
+    for (var i = 0; i < obstacleList.length; i++) {
+      obstacleList[i].update()
     }
   }
 
@@ -458,7 +515,6 @@ class BostacleGame {
       this.currentPlayerMoves = 0
       this.generation++
       this.settingsTextUpdate()
-      
       this.stages.resetStage()
     }
   }
@@ -507,17 +563,16 @@ class BostacleGame {
 
   selectBestParent() {
     var bestParent = null
-    var bestScore = 0
+    var bestScore = -1
     for (var i = 0; i < this.playerList.length; i++) {
       if (this.playerList[i].score > bestScore) {
         bestScore = this.playerList[i].score
         bestParent = this.playerList[i]
       }
     }
-    // console.log(bestParent.score)
-    // console.log(bestParent.brain.step)
     return bestParent
   }
+
   calculateTotalScore() {
     var totalScore = 0
     for (var i = 0; i < this.playerList.length; i++) {
@@ -533,6 +588,161 @@ class BostacleGame {
     nextGeneration[0].brain.isBest = true
   }
 
+  stageCreator() {
+    this.menu.creatorTools()
+    this.playerList = [new BotstaclePlayer(false, 0,this.stages.playerSpawn[0],this.stages.playerSpawn[1],0)]
+  }
+
+  creatorSelectTool(i) {
+    if (this.menu.text[this.menu.text.length - 1].text != 'Tools') {this.menu.text.pop()}
+    this.menu.menuState.placementPrimed = false
+    this.menu.menuState.placementLocked = false
+    if (i == 0) {this.menu.menuState.placing = new BostacleWall(new Point(-10, -10),10, 10,0,'rgba(0,0,0,0.6)')}  //  placing wall
+    if (i == 1) {this.menu.menuState.placing = new BostacleWinZone(1255,695,50,50)}
+    if (i == 2) {this.menu.menuState.placing = new BotstaclePlayer(false,0,1245,685)
+      this.menu.menuState.placing.alpha = 0.5
+      this.menu.menuState.placementLocked = true}
+    if (i == 3) {this.menu.menuState.placing = new BostacleObstacle(new Point(1255, 695),50,50,30,[new Point(1255, 695)])}
+    if (i == 4) {this.menu.menuState.placing = 'eraser'}
+    }
+
+  creatorHover(x, y) {
+    if (this.menu.menuState.gridLock) {
+      if (x % 80 >= 40) {x = x + 80 - x % 80} else {x -= x % 80}
+      if (y % 80 >= 40) {y = y + 80 - y % 80} else {y -= y % 80}
+    }
+    var selected = this.menu.menuState.placing 
+    this.menu.menuState.placementPrimed = true
+    if (!selected) {return}
+    if (selected instanceof BostacleWall && !this.menu.menuState.placementLocked) {selected.pos.x = x - 5, selected.pos.y = y - 5}
+    if (selected instanceof BostacleWinZone && !this.menu.menuState.placementLocked || selected instanceof BostacleObstacle) {selected.pos.x = x - 25, selected.pos.y = y - 25}
+    if (selected instanceof BotstaclePlayer) {selected.pos.x = x - selected.width / 2, selected.pos.y = y - selected.height / 2}
+    if (selected instanceof BostacleObstacle) {
+      if (!this.menu.menuState.placementLocked) {
+        let moves = selected.moves
+        if (moves.length == 1 || getEuclidean([moves[moves.length - 2].x + selected.width / 2,moves[moves.length - 2].y + selected.height / 2],[x,y]) > 60) {
+          selected.moves[selected.moves.length - 1].x = x - selected.width / 2 
+          selected.moves[selected.moves.length - 1].y = y - selected.height / 2 
+          selected.pos.x = x - selected.width / 2 , selected.pos.y = y - selected.height / 2 
+      } else {
+          moves[moves.length - 1].x = moves[moves.length - 2].x
+          moves[moves.length - 1].y = moves[moves.length - 2].y
+          selected.pos.x = moves[moves.length - 2].x, selected.pos.y = moves[moves.length - 2].y
+        }
+      } else {
+        this.stages.resetStage()
+        selected.reverse = false
+        selected.moveIndex = 0
+        selected.step = 0
+        let speed = 0
+        if (x < 600) {speed = 0} else if (x > 1960) {speed = 10} else {
+          speed = integerDivision(x - 600, 136)
+        }
+        speed = Math.max(Math.abs(speed - 10) * 10, 10)
+        this.menu.text[this.menu.text.length - 1].text = `Speed : ${Math.abs(speed - 100) + 10}`
+        selected.time = speed
+        console.log(speed)
+      }
+      
+    } 
+    if ((selected instanceof BostacleWinZone || selected instanceof BostacleWall) && this.menu.menuState.placementLocked) {
+      let width = x - selected.pos.x, height = y - selected.pos.y
+      if (width < 10 && width >= 0) {width = 10}
+      if (width < 0 && width >= -10) {width = -10}
+      if (height < 10 && height >= 0) {height = 10}
+      if (height < 0 && height >= -10) {height = -10}
+      selected.width = width
+      selected.height = height
+    }
+  }
+  creatorPlace(x, y) {
+    if (!this.menu.menuState.placementPrimed) {return}
+    var selected = this.menu.menuState.placing
+    if (selected instanceof BostacleObstacle) {
+      this.creatorPlaceObstacle(selected, x, y)
+    } else if (selected && this.menu.menuState.placementLocked) {
+      if (selected instanceof BostacleWall) {
+        selected.color = 'black'
+        this.stages.walls.push(selected)
+      } else if (selected instanceof BostacleWinZone) {
+        this.stages.goal = selected
+      }else if (selected instanceof BotstaclePlayer) {
+        this.stages.playerSpawn = [selected.pos.x, selected.pos.y]
+        selected.alpha = 0.7
+        this.playerList = [selected]
+      }
+      this.menu.menuState.placementLocked = false
+      this.menu.menuState.placementPrimed = false
+      this.creatorReselect(selected)
+    } else if (selected == 'eraser') {
+      this.erase(new Point(x,y))
+    } else if (selected && !this.menu.menuState.placementLocked) { this.menu.menuState.placementLocked = true}
+  }
+
+  creatorReselect(prev) {
+    if (prev instanceof BostacleWall) {
+      this.menu.menuState.placing = new BostacleWall(new Point(-10, -10),10, 10,0,'rgba(0,0,0,0.6)')
+    } else if (prev instanceof BostacleWinZone) {
+      this.menu.menuState.placing = new BostacleWinZone(-50,-50,50,50)
+    }else if (prev instanceof BostacleObstacle) {
+      this.menu.menuState.placing = prev
+    } else {this.menu.menuState.placing = null}
+  }
+
+  creatorPlaceObstacle(obstacle, mouseX, mouseY) {
+    if (this.menu.menuState.placementLocked) {
+      this.stages.obstacles.push(obstacle)
+      this.menu.menuState.placing = null
+      this.menu.text.pop()
+      this.menu.menuState.placementLocked = null
+    }else if (obstacle.moves.length == 1) {
+      obstacle.moves.push(new Point(mouseX - obstacle.width / 2, mouseY - obstacle.height / 2))
+    } else {
+      let prevPosition = obstacle.moves[obstacle.moves.length -2], currPosition = obstacle.moves[obstacle.moves.length -1] 
+      if (!(prevPosition.x == currPosition.x && prevPosition.y == currPosition.y)) {
+        obstacle.moves.push(new Point(mouseX - obstacle.width / 2, mouseY - obstacle.height / 2))
+      } else {
+        this.menu.menuState.placementLocked = true
+        obstacle.moves.pop()
+        this.menu.text.push(new BostacleText('Speed : 1', new Point(980,1240),600,200))
+      }
+    }
+  }
+
+  erase(click) {
+    for (var i = 0; i < this.stages.obstacles.length; i++) {
+      if (pointInRect(click, this.stages.obstacles[i])) {
+        this.stages.obstacles.splice(i, 1)
+        return
+      }
+    }
+    if (this.stages.playerSpawn && pointInRect(click, {pos : new Point(this.stages.playerSpawn[0],this.stages.playerSpawn[1]), width : 70, height : 70})) {
+      this.stages.playerSpawn = [1280,720]
+      this.playerList[0].pos.x = 1245, this.playerList[0].pos.y = 685
+    }
+    if (this.stages.goal && pointInRect(click, this.stages.goal)) {
+      this.stages.goal = null
+    }
+    for (var i = 0; i < this.stages.walls.length; i++) {
+      if (pointInRect(click, this.stages.walls[i])) {
+        this.stages.walls.splice(i, 1)
+        return
+      }
+    }
+  }
+
+  gridSnapToggle() {
+    if (!this.menu.menuState.gridLock) {
+      this.menu.menuState.gridLock = true
+      this.menu.buttons[7].btnColor = 'rgba(130,130,130,1)'
+      this.menu.buttons[7].fontColor = '#2e2e2e'
+    } else {
+      this.menu.menuState.gridLock = false
+      this.menu.buttons[7].btnColor = 'rgba(200,200,200,1)'
+      this.menu.buttons[7].fontColor = '#4f4f4f'
+    }
+  }
+
   addEventListeners() {
     this.display.canvas.addEventListener("keydown", (event) => {
       this.keyDown(event.key)
@@ -546,12 +756,16 @@ class BostacleGame {
         scaleY = this.display.canvas.height / rect.height
       // console.log((event.clientX - rect.left)* scaleX,(event.clientY - rect.top)* scaleY)
       this.hoverButtons((event.clientX - rect.left)* scaleX,(event.clientY - rect.top)* scaleY)
+      this.creatorHover((event.clientX - rect.left)* scaleX,(event.clientY - rect.top)* scaleY)
     })
     this.display.canvas.addEventListener("click", (event) => {
       var rect = this.display.canvas.getBoundingClientRect(),
         scaleX = this.display.canvas.width / rect.width,
         scaleY = this.display.canvas.height / rect.height
-      this.clickButtons((event.clientX - rect.left)* scaleX,(event.clientY - rect.top)* scaleY)
+      var buttonClicked = this.clickButtons((event.clientX - rect.left)* scaleX,(event.clientY - rect.top)* scaleY)
+      if (!buttonClicked && this.menu.menuState.state == 'stageCreator') {
+        this.creatorPlace((event.clientX - rect.left)* scaleX,(event.clientY - rect.top)* scaleY)
+      }
     })
   }
 
@@ -567,12 +781,15 @@ class BostacleGame {
 
   clickButtons(mouseX,mouseY) {
     var buttons = this.menu.buttons
+    var clicked = false
     for (var i = 0; i < buttons.length; i++) {
       var b = buttons[i]
       if (pointInRect(new Point(mouseX, mouseY),b)) {
             this.buttonFunction(b.use, b)
-          } 
+            clicked = true
+          }
   }
+  return clicked
 }
 
   settingsTextUpdate() {
@@ -651,6 +868,7 @@ class BostacleGame {
     this.playerList = nextGeneration
   }
 
+
   buttonFunction(use, button) {
     switch(use) {
       case 'stageSelect' : this.menu.stageSelect()
@@ -662,6 +880,8 @@ class BostacleGame {
       case 'slidesMinus' : this.menu.iterateSlides(1)
         break
       case 'settingsToggle' : this.menu.settingsToggle()
+        break
+      case 'toolsToggle' : this.menu.toolsToggle()
         break
       case 'botCountUpdate' : this.botCountUpdate(button.text)
         break
@@ -675,31 +895,52 @@ class BostacleGame {
         break
       case 'resetPlayers' : this.resetPlayers()
         break
+      case 'stageCreator' : this.stageCreator()
+        break
+      case 'selectWall' : this.creatorSelectTool(0)
+        break
+      case 'selectGoal' : this.creatorSelectTool(1)
+        break
+      case 'selectSpawn' : this.creatorSelectTool(2)
+        break
+      case 'selectEnemy' : this.creatorSelectTool(3)
+        break
+      case 'selectEraser' : this.creatorSelectTool(4)
+        break
+      case 'gridSnap' : this.gridSnapToggle()
+        break
+
 
     }
   }
-
   keyDown(key) {
       switch(key) {
-        case 'w' : if (this.menu.menuState[0] == 'inGame') {
+        case 'w' : if (this.menu.menuState.state == 'inGame') {
           this.playerList[0].dirH[0] = -1
         } 
           break
-        case 'd' : if (this.menu.menuState[0] == 'inGame') {
+        case 'd' : if (this.menu.menuState.state == 'inGame') {
           this.playerList[0].dirH[1] = 1
         }
           break
-        case 's' : if (this.menu.menuState[0] == 'inGame') {
+        case 's' : if (this.menu.menuState.state == 'inGame') {
           this.playerList[0].dirH[2] = 1
         }
           break
-        case 'a' : if (this.menu.menuState[0] == 'inGame') {
+        case 'a' : if (this.menu.menuState.state == 'inGame') {
           this.playerList[0].dirH[3] = -1
         }
           break
-        case 'Escape' : if (this.menu.menuState[0] == 'inGame') {
+        case 'Escape' : if (this.menu.menuState.state == 'inGame') {
           this.endGame()
-        } else if (this.menu.menuState[0] == 'stageSelect') {
+        } else if (this.menu.menuState.state == 'stageCreator') {
+          if (this.menu.menuState.placing) {
+            this.menu.menuState.placing = null
+            this.menu.menuState.placementLocked = null
+            this.menu.menuState.placementPrimed = null
+            if (this.menu.text[this.menu.text.length - 1].text != 'Tools') {this.menu.text.pop()}
+          } else {this.endGame()}
+        } else if (this.menu.menuState.state == 'stageSelect') {
           this.menu.mainMenu()
         }
           break
@@ -724,6 +965,10 @@ class BostacleGame {
 
 function initializeBostacle() {
   botstacleHTML()
+  document.getElementById('project-back-to-home').addEventListener('click', ()=> {
+    game = null
+    homeTransition()
+  })
   game = new BostacleGame()
   game.addEventListeners()
 }
@@ -747,12 +992,12 @@ class BostacleHud {
     }
     var dist = 1600
     if (!right) {
-      if (this.menuState[1] == 2) {return}
-      this.menuState[1]++
+      if (this.menuState.slideIndex == 2) {return}
+      this.menuState.slideIndex++
       dist *= -1
     } else {if (
-      this.menuState[1] == 0) {return}
-      this.menuState[1]--
+      this.menuState.slideIndex == 0) {return}
+      this.menuState.slideIndex--
     }
     this.buttons.slice(3).forEach((item) => {
       move(item, dist)
@@ -786,14 +1031,14 @@ class BostacleHud {
   }
 
   mainMenu() {
-    this.menuState = ['mainMenu']
+    this.menuState = {state : 'mainMenu'}
     this.images = []
     this.buttons = [new BotsacleButton('Stage Select',new Point(980, 1500), 600, 150,[new Point(980, 1500),new Point(980,1000),25,0],'stageSelect'), new BotsacleButton('About',new Point(980, 1700), 600, 150,[new Point(980, 1700),new Point(980,1200),25,0],'')]
     this.text = [new BostacleText('Bostacle Course!',new Point(930,300), 700, 200, null, 'Arial', 130, '#4deb21', 'black', 3)]
   }
 
   stageSelect() {
-    this.menuState = ['stageSelect', 0]
+    this.menuState = {state : 'stageSelect', slideIndex : 0}
     this.images = [
       new BostacleImage('createStage.png',new Point(680,350),1200,675),
       new BostacleImage('stage1.png',new Point(2280,350),1200,675),
@@ -816,9 +1061,9 @@ class BostacleHud {
   }
 
   inGame() {
-    this.menuState = ['inGame', 0]
+    this.menuState = {state : 'inGame', menuOut : 0}
     this.buttons = [
-      new BotsacleButton('s',new Point(0, 1160), 100,100, null, 'settingsToggle','Arial',60,'white',null,'rgba(0,0,0,0.5)'),
+      new BotsacleButton('S',new Point(0, 1160), 100,100, null, 'settingsToggle','Arial',60,'white',null,'rgba(0,0,0,0.5)'),
       new BotsacleButton('',new Point(-605, 180), 600,1080, null, '','Arial',0,'#4f4f4f',null,'rgba(0,0,0,0.5)'),
       new BotsacleButton('-',new Point(-580, 300), 60,80, null, 'botCountUpdate','Arial',50,'#4f4f4f',null,'rgba(200,200,200,1)'),
       new BotsacleButton('-',new Point(-350, 300), 60,80, null, 'mutationUpdate','Arial',50,'#4f4f4f',null,'rgba(200,200,200,1)'),
@@ -828,8 +1073,9 @@ class BostacleHud {
       new BotsacleButton('+',new Point(-210, 300), 60,80, null, 'mutationUpdate','Arial',50,'#4f4f4f',null,'rgba(200,200,200,1)'),
       new BotsacleButton('+',new Point(-440, 480), 60,80, null, 'increaseRateUpdate','Arial',50,'#4f4f4f',null,'rgba(200,200,200,1)'),
       new BotsacleButton('+',new Point(-210, 480), 60,80, null, 'increaseAmtUpdate','Arial',50,'#4f4f4f',null,'rgba(200,200,200,1)'),
-      new BotsacleButton('Reset Settings',new Point(-580, 1020), 560,80, null, 'resetSettings','Arial',50,'#4f4f4f',null,'rgba(200,200,200,1)'),
-      new BotsacleButton('Reset Players',new Point(-580, 1120), 560,80, null, 'resetPlayers','Arial',50,'white',null,'rgba(200,50,50,1)'),
+      new BotsacleButton('Reset Settings',new Point(-580, 920), 560,80, null, 'resetSettings','Arial',50,'#4f4f4f',null,'rgba(200,200,200,1)'),
+      new BotsacleButton('Reset Players',new Point(-580, 1020), 560,80, null, 'resetPlayers','Arial',50,'white',null,'rgba(200,50,50,1)'),
+      new BotsacleButton('Edit Stage',new Point(-580, 1120), 560,80, null, 'stageCreator','Arial',50,'white',null,'rgba(200,50,50,1)'),
       
     ]
     this.images = []
@@ -842,45 +1088,85 @@ class BostacleHud {
       new BostacleText('%', new Point(-220, 300),140, 100,null,'Arial', 50,'white',null,null,100),
       new BostacleText('IncRate', new Point(-520, 480),140, 100,null,'Arial', 50,'white',null,null),
       new BostacleText('Inc', new Point(-220, 480),140, 100,null,'Arial', 50,'white',null,null),
-      new BostacleText('Current Generation', new Point(-580, 620),560, 100,null,'Arial', 65,'white',null,null),
-      new BostacleText('50', new Point(-580, 720),560, 100,null,'Arial', 65,'white',null,null),
-      new BostacleText('Moves Made', new Point(-580, 820),560, 100,null,'Arial', 65,'white',null,null),
-      new BostacleText('20', new Point(-580, 920),560, 100,null,'Arial', 65,'white',null,null),
+      new BostacleText('Current Generation', new Point(-580, 620),560, 75,null,'Arial', 65,'white',null,null),
+      new BostacleText('50', new Point(-580, 695),560, 75,null,'Arial', 65,'white',null,null),
+      new BostacleText('Moves Made', new Point(-580, 770),560, 75,null,'Arial', 65,'white',null,null),
+      new BostacleText('20', new Point(-580, 845),560, 75,null,'Arial', 65,'white',null,null),
 
     ]
   }
-
   settingsToggle() {
-    function moveText (goal, textList) {
-      var x = goal
-      for (var i = 0; i < textList.length; i++) {
-        x = goal
-        if (i & 1) {x = goal + 300}
-        textList[i].movement = [textList[i].pos, new Point(x, textList[i].pos.y), 30, 0]
-      }
-    }
-    if (this.menuState[1] == 0) {
+    if (this.menuState.menuOut == 0) {
       this.buttons[0].movement = [this.buttons[0].pos, new Point(600, 1160),30, 0]
       this.buttons[1].movement = [this.buttons[1].pos, new Point(0, 180),30, 0]
-      moveText(50, this.text.slice(0,4))
-      moveText(80, this.text.slice(4, 8))
-      this.text.slice(8,12).forEach((item) => {moveText(20,[item])})
-      moveText(20, this.buttons.slice(2, 6))
-      moveText(220, this.buttons.slice(6, 10))
-      this.buttons.slice(10,12).forEach((item) => {moveText(20, [item])})
-      this.menuState[1] = 1
+      this.moveText(50, this.text.slice(0,4))
+      this.moveText(80, this.text.slice(4, 8))
+      this.text.slice(8,12).forEach((item) => {this.moveText(20,[item])})
+      this.moveText(20, this.buttons.slice(2, 6))
+      this.moveText(220, this.buttons.slice(6, 10))
+      this.buttons.slice(10,13).forEach((item) => {this.moveText(20, [item])})
+      this.menuState.menuOut = 1
     } else {
       this.buttons[0].movement = [this.buttons[0].pos, new Point(0, 1160),30, 0]
       this.buttons[1].movement = [this.buttons[1].pos, new Point(-605, 180),30, 0]
-      this.menuState[1] = 0
-      moveText(-550, this.text.slice(0,4))
-      moveText(-520, this.text.slice(4, 8))
-      this.text.slice(8,12).forEach((item) => {moveText(-580,[item])})
-      moveText(-580, this.buttons.slice(2, 6))
-      moveText(-380, this.buttons.slice(6, 10))
-      this.buttons.slice(10,12).forEach((item) => {moveText(-580, [item])})
+      this.menuState.menuOut = 0
+      this.moveText(-550, this.text.slice(0,4))
+      this.moveText(-520, this.text.slice(4, 8))
+      this.text.slice(8,12).forEach((item) => {this.moveText(-580,[item])})
+      this.moveText(-580, this.buttons.slice(2, 6))
+      this.moveText(-380, this.buttons.slice(6, 10))
+      this.buttons.slice(10,13).forEach((item) => {this.moveText(-580, [item])})
+    }
+  }
+
+  creatorTools() {
+    this.menuState = {state : 'stageCreator', menuOut : 1, currentTool : 'none', placing : null, placementLocked : false, placementPrimed : false, gridLock : true}
+    this.buttons = [
+      new BotsacleButton('T',new Point(600, 1160), 100,100, null, 'toolsToggle','Arial',60,'white',null,'rgba(0,0,0,0.5)'),
+      new BotsacleButton('',new Point(0, 180), 600,1080, null, '','Arial',0,'#4f4f4f',null,'rgba(0,0,0,0.5)'),
+      new BotsacleButton('Wall Placer',new Point(20, 300), 260,130, null, 'selectWall','Arial',40,'#4f4f4f',null,'rgba(200,200,200,1)'),
+      new BotsacleButton('Goal Placer',new Point(320, 300), 260,130, null, 'selectGoal','Arial',40,'#4f4f4f',null,'rgba(200,200,200,1)'),
+      new BotsacleButton('Spawn Placer',new Point(20, 450), 260,130, null, 'selectSpawn','Arial',40,'#4f4f4f',null,'rgba(200,200,200,1)'),
+      new BotsacleButton('Enemy Placer',new Point(320, 450), 260,130, null, 'selectEnemy','Arial',40,'#4f4f4f',null,'rgba(200,200,200,1)'),
+      new BotsacleButton('Eraser',new Point(20, 600), 260,130, null, 'selectEraser','Arial',40,'#4f4f4f',null,'rgba(200,200,200,1)'),
+      new BotsacleButton('Grid Snap',new Point(320, 600), 260,130, null, 'gridSnap','Arial',40,'#2e2e2e',null,'rgba(130,130,130,1)'),
+      new BotsacleButton('Start Game',new Point(20, 1100), 520,130, null, 'startGame','Arial',40,'#4f4f4f',null,'rgba(200,130,130,1)'),
+    ]
+    this.images = []
+    this.text = [
+      new BostacleText('Tools', new Point(20, 200),560, 100,null,'Arial', 80,'white',null,null),
+
+    ]
+  }
+  toolsToggle() {
+    if (this.menuState.menuOut == 0) {
+      this.buttons[0].movement = [this.buttons[0].pos, new Point(600, 1160),30, 0]
+      this.buttons[1].movement = [this.buttons[1].pos, new Point(0, 180),30, 0]
+      this.moveText(20, [this.text[0]])
+      this.moveText(20, this.buttons.slice(2,8))
+      this.moveText(40, [this.buttons[8]])
+
+      this.menuState.menuOut = 1
+
+    } else {
+      this.buttons[0].movement = [this.buttons[0].pos, new Point(0, 1160),30, 0]
+      this.buttons[1].movement = [this.buttons[1].pos, new Point(-605, 180),30, 0]
+      this.moveText(-580, [this.text[0]])
+      this.moveText(-580, this.buttons.slice(2,8))
+      this.moveText(-560, [this.buttons[8]])
+
+      this.menuState.menuOut = 0
+    }
+  }
 
 
+  
+  moveText (goal, textList) {
+    var x = goal
+    for (var i = 0; i < textList.length; i++) {
+      x = goal
+      if (i & 1) {x = goal + 300}
+      textList[i].movement = [textList[i].pos, new Point(x, textList[i].pos.y), 30, 0]
     }
   }
 }
@@ -932,10 +1218,10 @@ class BostacleImage {
 
 class BostacleStages {
   constructor() {
-    this.walls = null
-    this.playerSpawn = null
+    this.walls = []
+    this.playerSpawn = [1280, 720]
     this.goal = null
-    this.obstacles = null
+    this.obstacles = []
     this.selectedStage = 0
     this.stageIndexes = 2
   }
@@ -950,7 +1236,7 @@ class BostacleStages {
   }
 
   removeStage() {
-    this.playerSpawn = [0,0]
+    this.playerSpawn = [1280,720]
     this.obstacles = []
     this.walls = []
     this.goal = null
@@ -1025,4 +1311,5 @@ function botstacleHTML() {
     `
   document.getElementsByTagName('body')[0].innerHTML = html
 }
+
 // initializeBostacle()
