@@ -441,7 +441,9 @@ class BostacleGame {
     if (this.menu.menuState.state == 'stageSelect') {
       this.stages.loadStage(this.menu.menuState.slideIndex)
     }
+    this.generation = 1
     this.menu.inGame()
+    this.menu.settingsToggle()
     this.settingsTextUpdate()
     this.running = true
     this.maxPlayerMoves = this.playerMovesIncreseAmount
@@ -602,9 +604,27 @@ class BostacleGame {
     if (i == 2) {this.menu.menuState.placing = new BotstaclePlayer(false,0,1245,685)
       this.menu.menuState.placing.alpha = 0.5
       this.menu.menuState.placementLocked = true}
-    if (i == 3) {this.menu.menuState.placing = new BostacleObstacle(new Point(1255, 695),50,50,30,[new Point(1255, 695)])}
+    if (i == 3) {this.menu.menuState.placing = new BostacleObstacle(new Point(1255, 695),50,50,100,[new Point(1255, 695)])}
     if (i == 4) {this.menu.menuState.placing = 'eraser'}
+    this.creatorHighlightSelected(i)
+  }
+  creatorHighlightSelected(i) {
+    this.menu.buttons.slice(2,7).forEach(function(item) {
+      item.btnColor = 'rgba(200,200,200,1)'
+    })
+    switch(i) {
+      case 0 : this.menu.buttons[2].btnColor = 'rgba(150,150,150,1)'
+        break
+      case 1 : this.menu.buttons[3].btnColor = 'rgba(150,150,150,1)'
+        break
+      case 2 : this.menu.buttons[4].btnColor = 'rgba(150,150,150,1)'
+        break
+      case 3 : this.menu.buttons[5].btnColor = 'rgba(150,150,150,1)'
+        break
+      case 4 : this.menu.buttons[6].btnColor = 'rgba(150,150,150,1)'
+        break
     }
+  }
 
   creatorHover(x, y) {
     if (this.menu.menuState.gridLock) {
@@ -641,7 +661,6 @@ class BostacleGame {
         speed = Math.max(Math.abs(speed - 10) * 10, 10)
         this.menu.text[this.menu.text.length - 1].text = `Speed : ${Math.abs(speed - 100) + 10}`
         selected.time = speed
-        console.log(speed)
       }
       
     } 
@@ -667,7 +686,7 @@ class BostacleGame {
       } else if (selected instanceof BostacleWinZone) {
         this.stages.goal = selected
       }else if (selected instanceof BotstaclePlayer) {
-        this.stages.playerSpawn = [selected.pos.x, selected.pos.y]
+        this.stages.playerSpawn = [selected.pos.x + selected.width / 2, selected.pos.y + selected.height / 2]
         selected.alpha = 0.7
         this.playerList = [selected]
       }
@@ -686,7 +705,10 @@ class BostacleGame {
       this.menu.menuState.placing = new BostacleWinZone(-50,-50,50,50)
     }else if (prev instanceof BostacleObstacle) {
       this.menu.menuState.placing = prev
-    } else {this.menu.menuState.placing = null}
+    } else {
+      this.menu.menuState.placing = null
+      this.creatorHighlightSelected(-1)
+    }
   }
 
   creatorPlaceObstacle(obstacle, mouseX, mouseY) {
@@ -695,16 +717,17 @@ class BostacleGame {
       this.menu.menuState.placing = null
       this.menu.text.pop()
       this.menu.menuState.placementLocked = null
+      this.creatorHighlightSelected(-1)
     }else if (obstacle.moves.length == 1) {
       obstacle.moves.push(new Point(mouseX - obstacle.width / 2, mouseY - obstacle.height / 2))
     } else {
       let prevPosition = obstacle.moves[obstacle.moves.length -2], currPosition = obstacle.moves[obstacle.moves.length -1] 
       if (!(prevPosition.x == currPosition.x && prevPosition.y == currPosition.y)) {
-        obstacle.moves.push(new Point(mouseX - obstacle.width / 2, mouseY - obstacle.height / 2))
+        obstacle.moves.push(new Point(currPosition.x, currPosition.y))
       } else {
         this.menu.menuState.placementLocked = true
         obstacle.moves.pop()
-        this.menu.text.push(new BostacleText('Speed : 1', new Point(980,1240),600,200))
+        this.menu.text.push(new BostacleText('Speed : 10', new Point(980,1240),600,200))
       }
     }
   }
@@ -754,7 +777,6 @@ class BostacleGame {
       var rect = this.display.canvas.getBoundingClientRect(),
         scaleX = this.display.canvas.width / rect.width,
         scaleY = this.display.canvas.height / rect.height
-      // console.log((event.clientX - rect.left)* scaleX,(event.clientY - rect.top)* scaleY)
       this.hoverButtons((event.clientX - rect.left)* scaleX,(event.clientY - rect.top)* scaleY)
       this.creatorHover((event.clientX - rect.left)* scaleX,(event.clientY - rect.top)* scaleY)
     })
@@ -938,6 +960,7 @@ class BostacleGame {
             this.menu.menuState.placing = null
             this.menu.menuState.placementLocked = null
             this.menu.menuState.placementPrimed = null
+            this.creatorHighlightSelected(-1)
             if (this.menu.text[this.menu.text.length - 1].text != 'Tools') {this.menu.text.pop()}
           } else {this.endGame()}
         } else if (this.menu.menuState.state == 'stageSelect') {
@@ -992,7 +1015,7 @@ class BostacleHud {
     }
     var dist = 1600
     if (!right) {
-      if (this.menuState.slideIndex == 2) {return}
+      if (this.menuState.slideIndex == 3) {return}
       this.menuState.slideIndex++
       dist *= -1
     } else {if (
@@ -1033,7 +1056,7 @@ class BostacleHud {
   mainMenu() {
     this.menuState = {state : 'mainMenu'}
     this.images = []
-    this.buttons = [new BotsacleButton('Stage Select',new Point(980, 1500), 600, 150,[new Point(980, 1500),new Point(980,1000),25,0],'stageSelect'), new BotsacleButton('About',new Point(980, 1700), 600, 150,[new Point(980, 1700),new Point(980,1200),25,0],'')]
+    this.buttons = [new BotsacleButton('Stage Select',new Point(980, 1500), 600, 150,[new Point(980, 1500),new Point(980,1000),25,0],'stageSelect')]
     this.text = [new BostacleText('Bostacle Course!',new Point(930,300), 700, 200, null, 'Arial', 130, '#4deb21', 'black', 3)]
   }
 
@@ -1043,6 +1066,7 @@ class BostacleHud {
       new BostacleImage('createStage.png',new Point(680,350),1200,675),
       new BostacleImage('stage1.png',new Point(2280,350),1200,675),
       new BostacleImage('stage2.png',new Point(3880,350),1200,675),
+      new BostacleImage('stage3.png',new Point(5480,350),1200,675),
     ]
     this.buttons = [
       new BotsacleButton('Start',new Point(980,1195),600,120,null,'startGame'),
@@ -1050,48 +1074,50 @@ class BostacleHud {
       new BotsacleButton('||',new Point(740,1195),210,120,null,'slidesMinus'),
       new BotsacleButton('', new Point(670, 340),1220, 695,null,null,null,null,null,null,'rgb(100,100,100)','rgba(0,0,0,0)'),
       new BotsacleButton('', new Point(2270, 340),1220, 695,null,null,null,null,null,null,'rgb(100,100,100)','rgba(0,0,0,0)'),
-      new BotsacleButton('', new Point(3870, 340),1220, 695,null,null,null,null,null,null,'rgb(100,100,100)','rgba(0,0,0,0)')
+      new BotsacleButton('', new Point(3870, 340),1220, 695,null,null,null,null,null,null,'rgb(100,100,100)','rgba(0,0,0,0)'),
+      new BotsacleButton('', new Point(5470, 340),1220, 695,null,null,null,null,null,null,'rgb(100,100,100)','rgba(0,0,0,0)')
     ]
     this.text = [
       new BostacleText('Select Stage',new Point(980,50),600,300,null,'Arial',130,'white','black',2),
       new BostacleText('Create Stage', new Point(680,1045),1200,100),
       new BostacleText('Stage 1', new Point(2280,1045),1200,100),
-      new BostacleText('Stage 2', new Point(3880,1045),1200,100)
+      new BostacleText('Stage 2', new Point(3880,1045),1200,100),
+      new BostacleText('Stage 3', new Point(5480,1045),1200,100)
     ]
   }
 
   inGame() {
-    this.menuState = {state : 'inGame', menuOut : 0}
+    this.menuState = {state : 'inGame', menuOut : 1}
     this.buttons = [
-      new BotsacleButton('S',new Point(0, 1160), 100,100, null, 'settingsToggle','Arial',60,'white',null,'rgba(0,0,0,0.5)'),
-      new BotsacleButton('',new Point(-605, 180), 600,1080, null, '','Arial',0,'#4f4f4f',null,'rgba(0,0,0,0.5)'),
-      new BotsacleButton('-',new Point(-580, 300), 60,80, null, 'botCountUpdate','Arial',50,'#4f4f4f',null,'rgba(200,200,200,1)'),
-      new BotsacleButton('-',new Point(-350, 300), 60,80, null, 'mutationUpdate','Arial',50,'#4f4f4f',null,'rgba(200,200,200,1)'),
-      new BotsacleButton('-',new Point(-580, 480), 60,80, null, 'increaseRateUpdate','Arial',50,'#4f4f4f',null,'rgba(200,200,200,1)'),
-      new BotsacleButton('-',new Point(-350, 480), 60,80, null, 'increaseAmtUpdate','Arial',50,'#4f4f4f',null,'rgba(200,200,200,1)'),
-      new BotsacleButton('+',new Point(-440, 300), 60,80, null, 'botCountUpdate','Arial',50,'#4f4f4f',null,'rgba(200,200,200,1)'),
-      new BotsacleButton('+',new Point(-210, 300), 60,80, null, 'mutationUpdate','Arial',50,'#4f4f4f',null,'rgba(200,200,200,1)'),
-      new BotsacleButton('+',new Point(-440, 480), 60,80, null, 'increaseRateUpdate','Arial',50,'#4f4f4f',null,'rgba(200,200,200,1)'),
-      new BotsacleButton('+',new Point(-210, 480), 60,80, null, 'increaseAmtUpdate','Arial',50,'#4f4f4f',null,'rgba(200,200,200,1)'),
-      new BotsacleButton('Reset Settings',new Point(-580, 920), 560,80, null, 'resetSettings','Arial',50,'#4f4f4f',null,'rgba(200,200,200,1)'),
-      new BotsacleButton('Reset Players',new Point(-580, 1020), 560,80, null, 'resetPlayers','Arial',50,'white',null,'rgba(200,50,50,1)'),
-      new BotsacleButton('Edit Stage',new Point(-580, 1120), 560,80, null, 'stageCreator','Arial',50,'white',null,'rgba(200,50,50,1)'),
+      new BotsacleButton('S',new Point(600, 1160), 100,100, null, 'settingsToggle','Arial',60,'white',null,'rgba(0,0,0,0.5)'),
+      new BotsacleButton('',new Point(0, 180), 600,1080, null, '','Arial',0,'#4f4f4f',null,'rgba(0,0,0,0.5)'),
+      new BotsacleButton('-',new Point(20, 300), 60,80, null, 'botCountUpdate','Arial',50,'#4f4f4f',null,'rgba(200,200,200,1)'),
+      new BotsacleButton('-',new Point(320, 300), 60,80, null, 'mutationUpdate','Arial',50,'#4f4f4f',null,'rgba(200,200,200,1)'),
+      new BotsacleButton('-',new Point(20, 480), 60,80, null, 'increaseRateUpdate','Arial',50,'#4f4f4f',null,'rgba(200,200,200,1)'),
+      new BotsacleButton('-',new Point(320, 480), 60,80, null, 'increaseAmtUpdate','Arial',50,'#4f4f4f',null,'rgba(200,200,200,1)'),
+      new BotsacleButton('+',new Point(220, 300), 60,80, null, 'botCountUpdate','Arial',50,'#4f4f4f',null,'rgba(200,200,200,1)'),
+      new BotsacleButton('+',new Point(520, 300), 60,80, null, 'mutationUpdate','Arial',50,'#4f4f4f',null,'rgba(200,200,200,1)'),
+      new BotsacleButton('+',new Point(220, 480), 60,80, null, 'increaseRateUpdate','Arial',50,'#4f4f4f',null,'rgba(200,200,200,1)'),
+      new BotsacleButton('+',new Point(520, 480), 60,80, null, 'increaseAmtUpdate','Arial',50,'#4f4f4f',null,'rgba(200,200,200,1)'),
+      new BotsacleButton('Reset Settings',new Point(20, 920), 560,80, null, 'resetSettings','Arial',50,'#4f4f4f',null,'rgba(200,200,200,1)'),
+      new BotsacleButton('Reset Players',new Point(20, 1020), 560,80, null, 'resetPlayers','Arial',50,'white',null,'rgba(200,50,50,1)'),
+      new BotsacleButton('Edit Stage',new Point(20, 1120), 560,80, null, 'stageCreator','Arial',50,'white',null,'rgba(200,50,50,1)'),
       
     ]
     this.images = []
     this.text = [
-      new BostacleText('Bot Count', new Point(-580, 200),200, 100,null,'Arial', 50,'white',null,null),
-      new BostacleText('Mutation %', new Point(-350, 200),200, 100,null,'Arial', 50,'white',null,null),
-      new BostacleText('Inc. Rate', new Point(-580, 380),200, 100,null,'Arial', 50,'white',null,null),
-      new BostacleText('Move Inc.', new Point(-350, 380),200, 100,null,'Arial', 50,'white',null,null),
-      new BostacleText('botcnt', new Point(-520, 300),140, 100,null,'Arial', 50,'white',null,null,100),
-      new BostacleText('%', new Point(-220, 300),140, 100,null,'Arial', 50,'white',null,null,100),
-      new BostacleText('IncRate', new Point(-520, 480),140, 100,null,'Arial', 50,'white',null,null),
-      new BostacleText('Inc', new Point(-220, 480),140, 100,null,'Arial', 50,'white',null,null),
-      new BostacleText('Current Generation', new Point(-580, 620),560, 75,null,'Arial', 65,'white',null,null),
-      new BostacleText('50', new Point(-580, 695),560, 75,null,'Arial', 65,'white',null,null),
-      new BostacleText('Moves Made', new Point(-580, 770),560, 75,null,'Arial', 65,'white',null,null),
-      new BostacleText('20', new Point(-580, 845),560, 75,null,'Arial', 65,'white',null,null),
+      new BostacleText('Bot Count', new Point(20, 200),200, 100,null,'Arial', 50,'white',null,null),
+      new BostacleText('Mutation %', new Point(250, 200),200, 100,null,'Arial', 50,'white',null,null),
+      new BostacleText('Inc. Rate', new Point(20, 380),200, 100,null,'Arial', 50,'white',null,null),
+      new BostacleText('Move Inc.', new Point(250, 380),200, 100,null,'Arial', 50,'white',null,null),
+      new BostacleText('botcnt', new Point(80, 300),140, 100,null,'Arial', 50,'white',null,null,100),
+      new BostacleText('%', new Point(380, 300),140, 100,null,'Arial', 50,'white',null,null,100),
+      new BostacleText('IncRate', new Point(80, 480),140, 100,null,'Arial', 50,'white',null,null),
+      new BostacleText('Inc', new Point(380, 480),140, 100,null,'Arial', 50,'white',null,null),
+      new BostacleText('Current Generation', new Point(20, 620),560, 75,null,'Arial', 65,'white',null,null),
+      new BostacleText('50', new Point(20, 695),560, 75,null,'Arial', 65,'white',null,null),
+      new BostacleText('Moves Made', new Point(20, 770),560, 75,null,'Arial', 65,'white',null,null),
+      new BostacleText('20', new Point(20, 845),560, 75,null,'Arial', 65,'white',null,null),
 
     ]
   }
@@ -1130,7 +1156,7 @@ class BostacleHud {
       new BotsacleButton('Enemy Placer',new Point(320, 450), 260,130, null, 'selectEnemy','Arial',40,'#4f4f4f',null,'rgba(200,200,200,1)'),
       new BotsacleButton('Eraser',new Point(20, 600), 260,130, null, 'selectEraser','Arial',40,'#4f4f4f',null,'rgba(200,200,200,1)'),
       new BotsacleButton('Grid Snap',new Point(320, 600), 260,130, null, 'gridSnap','Arial',40,'#2e2e2e',null,'rgba(130,130,130,1)'),
-      new BotsacleButton('Start Game',new Point(20, 1100), 520,130, null, 'startGame','Arial',40,'#4f4f4f',null,'rgba(200,130,130,1)'),
+      new BotsacleButton('Start Game',new Point(20, 1100), 520,130, null, 'startGame','Arial',40,'#4f4f4f',null,'rgba(130,230,130,1)'),
     ]
     this.images = []
     this.text = [
@@ -1159,8 +1185,6 @@ class BostacleHud {
     }
   }
 
-
-  
   moveText (goal, textList) {
     var x = goal
     for (var i = 0; i < textList.length; i++) {
@@ -1232,6 +1256,8 @@ class BostacleStages {
         break
       case 2 : this.setStage2()
         break
+      case 3 : this.setStage3()
+        break
     }
   }
 
@@ -1293,6 +1319,31 @@ class BostacleStages {
       new BostacleWall(new Point(1680,220),10,800),
     ]
   }
+  setStage3() {
+    this.playerSpawn = [720,1040]
+    this.goal = new BostacleWinZone(1685, 560, 150, 75)
+    this.obstacles = [
+      new BostacleObstacle(new Point(1335, 791), 50, 50, 80, [new Point(695, 695), new Point(1335, 695), new Point(1335, 855), new Point(695, 855)]),
+      new BostacleObstacle(new Point(905, 775), 50, 50, 80, [new Point(1255, 775), new Point(795, 775)]),
+      new BostacleObstacle(new Point(1495, 525), 50, 50, 80, [new Point(1495, 375), new Point(1495, 455)])
+    ]
+    this.walls = [
+      new BostacleWall(new Point(635, 955), 10, 165),
+      new BostacleWall(new Point(635, 1115), 165, 10),
+      new BostacleWall(new Point(795, 1125),10,-165),
+      new BostacleWall(new Point(795, 955), 650, 10),
+      new BostacleWall(new Point(635, 955), 10, -315), 
+      new BostacleWall(new Point(635, 635), 570, 10),
+      new BostacleWall(new Point(1435, 955), 10, -395),
+      new BostacleWall(new Point(1195, 635), 10, -315),
+      new BostacleWall(new Point(1195, 315), 565, 10),
+      new BostacleWall(new Point(1435, 555), 245, 10),
+      new BostacleWall(new Point(1755, 315), 85, 10),
+      new BostacleWall(new Point(1835, 315), 10, 330),
+      new BostacleWall(new Point(1675, 555), 10, 85),
+      new BostacleWall(new Point(1675, 635), 165, 10)
+    ]
+  }
 }
 
 function botstacleHTML() {
@@ -1301,7 +1352,7 @@ function botstacleHTML() {
     <div id="maze-backing"></div>
     <div id="maze-content">
       <span class="section-header">Botstacle Course</span>
-      <canvas id="project-canvas" class="res-1024-576" style="width: 1024px; height: 576px;" width="2560" height="1440" tabindex="-1"></canvas>
+      <canvas id="project-canvas" class="res-1024-576" width="2560" height="1440" tabindex="-1"></canvas>
       <div id="project-back-to-home">
         <span>
           <i class="fa-solid fa-angle-left"></i>
