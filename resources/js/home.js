@@ -53,7 +53,7 @@ function initializeHome() {
 }
 function homeHTML() {
   var html = `
-  <div id="transition-wall"></div>
+    <div id="transition-wall"></div>
     <header id="home-backing">
       <div>
         <span>Tyler Riggs</span>
@@ -119,11 +119,8 @@ function homeHTML() {
           </div>
         </div>
       </div>
-      <div id="construction-banner">
-        <span>Website Under Construction</span>
-      </div>
     </div>
-    `
+  `
   document.getElementsByTagName('body')[0].innerHTML = html
 }
 
