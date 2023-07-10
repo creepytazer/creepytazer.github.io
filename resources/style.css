@@ -404,6 +404,8 @@ a {
 }
 #mail-info  {
   margin: auto;
+  color: rgb(0, 55, 183);
+
 }
 #contact-popup {
   position: absolute;
@@ -528,6 +530,20 @@ a {
 
 .maze-button-template:hover {
   background-position: 50% 50%;
+}
+
+.maze-tile-selector > div {
+ display: flex;
+ position: relative;
+}
+.maze-tile-selector > div  > span {
+  flex: 3 3 auto;
+  font-size: 1.3rem;
+}
+
+.maze-tile-selector > div > div{
+  flex: 1 1 auto;
+  aspect-ratio: 1 / 1;
 }
 
 .maze-currently-selected {
@@ -683,7 +699,10 @@ background-position: 100% 100%;}
   2s height,
   2s padding;
 }
-.maze-menu-vertical {  position: relative;
+.maze-menu-vertical {  
+  position: relative;
+  display: flex;
+  flex-direction: column;
   }
 #maze-menu-settings:not(:hover) > .maze-menu-dropdown > .maze-menu-vertical > *{
   padding: 0px 10px;
@@ -703,7 +722,7 @@ background-position: 100% 100%;}
 
 .maze-menu-dropdown {
   display: flex;
-  height: 150px;
+  height: 190px;
   position: absolute;
   overflow: hidden;
   padding: 15px 0;  
@@ -711,7 +730,7 @@ background-position: 100% 100%;}
   background: rgba(235, 235, 235, 0.5);
   left: 50%;
   transform: translateX(-50%);
-  top: -180px;
+  top: -220px;
   transition: 0.6s top,
   0.6s height;
   cursor: default;
@@ -786,17 +805,32 @@ background-position: 100% 100%;}
   background-color: #34f100;
 }
 
+.maze-end-pos {
+  position: relative;
+}
 .maze-end-pos::after {
   display: block;
   content: "";
-  position: relative;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   z-index: 1;
-  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  clip-path: polygon(50% 10%, 55% 38%, 91% 37%, 60% 50%, 75% 86%, 50% 60%, 25% 86%, 40% 50%, 9% 37%, 45% 38%);
   background-color: #f1c40f;
+}
+
+.maze-end-pos::before {
+  display: block;
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 47%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  background-color: rgb(226, 0, 226);
 }
 
 .maze-start-pos {
@@ -825,5 +859,21 @@ background-position: 100% 100%;}
   display: block;
   /* transform: translateX(-50%); */
   clip-path: polygon(50% 0%, 85% 15%, 100% 50%, 85% 85%, 50% 100%, 15% 85%, 0% 50%, 15% 15%);
+}
 
+.maze-eraser {
+  position: relative;
+}
+.maze-eraser::after {
+  content: "";
+  position: absolute;
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(255, 0, 0);
+  clip-path: polygon(30% 0, 0 30%, 30% 50%, 0 70%, 30% 100%, 50% 70%, 70% 100%, 100% 70%, 70% 50%, 100% 30%, 70% 0, 50% 30%);
+}
+.maze-wall-icon {
+  background-color: #3800a0;
+  border: 1px solid #1b004f ;
 }

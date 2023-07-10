@@ -660,7 +660,7 @@ maze_addEventListeners() {
     placerSettings[i].addEventListener('click', (e) =>{
       if (this.userEdit) {
         this.maze_removeSelectedPlacer()
-        e.target.classList.add('maze-currently-selected')  
+        e.currentTarget.classList.add('maze-currently-selected')  
       }
     })
   }
@@ -734,10 +734,10 @@ function maze_HTML() {
       <div class="maze-outer maze-top-settings">
         <span>Maze Tools</span>
         <div class="maze-tools">
-          <div id="maze-start-placer" class="maze-button-template maze-tile-selector editable">START-TEMP</div>
-          <div id="maze-goal-placer" class="maze-button-template maze-tile-selector editable">GOAL-TEMP</div>
-          <div id="maze-wall-placer" class="maze-button-template maze-tile-selector editable">WALL-TEMP</div>
-          <div id="maze-eraser-placer" class="maze-button-template maze-tile-selector editable">ERASER-TEMP</div>
+          <div id="maze-start-placer" class="maze-button-template maze-tile-selector editable"><div><span>Start Placer</span><div class='maze-start-pos'></div></div></div>
+          <div id="maze-goal-placer" class="maze-button-template maze-tile-selector editable"><div><span>Goal Placer</span><div class='maze-end-pos'></div></div></div>
+          <div id="maze-wall-placer" class="maze-button-template maze-tile-selector editable"><div><span>Wall Placer</span><div class='maze-wall-icon'></div></div></div>
+          <div id="maze-eraser-placer" class="maze-button-template maze-tile-selector editable"><div><span>Eraser</span><div class='maze-eraser'></div></div></div>
         </div>
       </div>
       <div id="maze-game"></div>
@@ -753,6 +753,7 @@ function maze_HTML() {
             <span>Settings</span>
             <div class="maze-menu-dropdown">
               <div class="maze-menu-vertical">
+                <span style='color:black; overflow: hidden;'>Search Algorithms</span>
                 <span id="maze-DFS" class="maze-mode-list-item maze-search-mode-selected maze-menu-item">Depth First Search</span>
                 <span id="maze-BFS" class="maze-mode-list-item maze-menu-item">Breadth First Search</span>
                 <span id="maze-dijkstra" class="maze-mode-list-item maze-menu-item">Dijkstra's</span>
