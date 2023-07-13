@@ -36,13 +36,15 @@ function initializeHome() {
   })
 
   contactInfo.addEventListener('focusin', function() {
-    contactInfo.classList.add('open');
-    contactInfo.classList.remove('close')
-
+    if (!contactInfo.classList.contains('open')) {
+      contactInfo.classList.add('open');
+      contactInfo.classList.remove('close')
+  
+    }
   });
 
-  contactInfo.addEventListener('focusout', function() {
-    if (!contactInfo.contains(document.activeElement)) {
+  contactInfo.addEventListener('focusout', function(event) {
+    if (event.relatedTarget == null || !event.relatedTarget.parentElement == contactInfo) {
       contactInfo.classList.remove('open');
       contactInfo.classList.add('close')
     }
@@ -53,76 +55,77 @@ function initializeHome() {
 }
 function homeHTML() {
   var html = `
-    <div id="transition-wall"></div>
-    <header id="home-backing">
-      <div>
-        <span>Tyler Riggs</span>
+  <div id="transition-wall"></div>
+  <header id="home-backing">
+    <div>
+      <span>Tyler Riggs</span>
+    </div>
+  </header>
+  <div id="home-cover">
+    <div id="home-scroll-down">
+      <i class="fa-solid fa-angles-down"></i>
+    </div>
+    <div id="home-content">
+      <div id="home-content-top"></div>
+      <div class="project-section">
+        <h2 class="section-header">Projects</h2>
       </div>
-    </header>
-    <div id="home-cover">
-      <div id="home-scroll-down">
-        <i class="fa-solid fa-angles-down"></i>
+      <div class="slideshow">
+        <div class="arrow" style="left: -40px">
+          <i class="arrow-left fa-solid fa-caret-left"></i>
+        </div>
+        <div class="arrow" style="right: -40px">
+          <i class="arrow-right fa-solid fa-caret-right"></i>
+        </div>
+        <div class="slideshow-images">
+          <div id="project-botstacle" class="slide-in-left">
+            <img src="resources/projects/botstacle course/images/stage1.png" alt="Botstacle Image">
+            <span class="home-project-banner">Botstacle Course</span>
+          </div>
+          <div id="project-maze" >
+            <img src="resources/images/maze-thumb.jpg" alt="Maze Image">
+            <span class="home-project-banner">Maze Game</span>
+          </div>
+        </div>
       </div>
-      <div id="home-content">
-        <div id="home-content-top"></div>
-        <div class="project-section">
-          <h2 class="section-header">Projects</h2>
+      <div id="about-section">
+        <h2 id="about-top">
+          <span>About Me</span>
+        </h2>
+        <div class="collapsible about-text" style="height: 0px;">
+          <p>
+            My name is Tyler Riggs. I started coding in early 2022 through a college 3-month certificate program,
+            mostly for fun. After it ended, I wanted to study more, so I did, using dozens of online recourses and 
+            courses. I decided in November 2022, I decided this is definitely something I would like to pursue. 
+            Studying more often, working on more projects, and now I've deciced it would be fun to make some web
+            based projects so I could put them on a website, and thats what this is. So welcome to my website. 
+          </p>
         </div>
-        <div class="slideshow">
-          <div class="arrow" style="left: -40px">
-            <i class="arrow-left fa-solid fa-caret-left"></i>
-          </div>
-          <div class="arrow" style="right: -40px">
-            <i class="arrow-right fa-solid fa-caret-right"></i>
-          </div>
-          <div class="slideshow-images">
-            <div id="project-botstacle" class="slide-in-left">
-              <img src="resources/projects/botstacle course/images/stage1.png" alt="Botstacle Image">
-              <span class="home-project-banner">Botstacle Course</span>
-            </div>
-            <div id="project-maze" >
-              <img src="resources/images/maze-thumb.jpg" alt="Maze Image">
-              <span class="home-project-banner">Maze Game</span>
-            </div>
-          </div>
-        </div>
-        <div id="about-section">
-          <h2 id="about-top">
-            <span>About Me</span>
-          </h2>
-          <div class="collapsible about-text" style="height: 0px;">
-            <p>
-              My name is Tyler Riggs. I started coding in early 2022 through a college 3-month certificate program, mostly for fun.
-              After it ended, I wanted to study more, so I did, using dozens of online recourses and courses. I decided in November 2022, I decided this is definitely something 
-              I would like to pursue. Studying more often, working on more projects, and now I've deciced it would be fun to make some web based projects so I could
-              put them on a website, and thats what this is. So welcome to my website.
-            </p>
-          </div>
-          <h2 id="about-bottom">
-            <i id="about-drop" class="drop fa-solid fa-caret-down"></i>
-          </h2>
-        </div>
-        <div id="socials">
-          <a href="/index.html" class="social-clickable">
-            <i class="icon twitter fa-brands fa-twitter"></i>
+        <h2 id="about-bottom">
+          <i id="about-drop" class="drop fa-solid fa-caret-down"></i>
+        </h2>
+      </div>
+      <div id="socials">
+        <!-- <a href="/index.html" class="social-clickable">
+          <i class="icon twitter fa-brands fa-twitter"></i>
+        </a> -->
+        <a href="https://www.linkedin.com/in/tyler-riggs121/" target="_blank" class="social-clickable">
+          <i class="icon linkedin fa-brands fa-linkedin-in"></i>
+        </a>
+        <a href="https://github.com/creepytazer" target="_blank" class="social-clickable">
+          <i class="icon github fa-brands fa-github"></i>
+        </a>
+        <div style="position: relative;">
+          <a id="contact-info" class="social-clickable">
+            <i class="icon email fa-solid fa-envelope"></i>
           </a>
-          <a href="https://www.linkedin.com/in/tyler-riggs-20bab926b/" target="_blank" class="social-clickable">
-            <i class="icon linkedin fa-brands fa-linkedin-in"></i>
-          </a>
-          <a href="https://github.com/creepytazer" target="_blank" class="social-clickable">
-            <i class="icon github fa-brands fa-github"></i>
-          </a>
-          <div style="position: relative;">
-            <a id="contact-info" class="social-clickable">
-              <i class="icon email fa-solid fa-envelope"></i>
-            </a>
-            <div id="contact-popup" tabindex="-1">
-              <a id="mail-info" href="mailto: tylerriggslfw@gmail.com" tabindex="-1">tylerriggslfw@gmail.com</a>
-            </div>
+          <div id="contact-popup" tabindex="-1">
+            <a id="mail-info" href="mailto: tippyty2003@gmail.com" tabindex="-1">tippty2003@gmail.com</a>
           </div>
         </div>
       </div>
     </div>
+  </div>
   `
   document.getElementsByTagName('body')[0].innerHTML = html
 }
